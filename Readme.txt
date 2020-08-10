@@ -1,15 +1,19 @@
 ZenseMe (Windows Phone, Zune, MTP device scrobbler for Last.fm)
 By Arnold Vink (Dumbie)
-Release: v1.1.6
+Release: v2.0.0
 
 --------------------------------------------------------
+
+If you are building from source, you will need to get an API key from last.fm. Place your 'API key' and 'Shared secret' in ZenseMeResources/Keys.cs. If anyone knows a better way to do this, please tell me.
+
 
 | Installation Instructions
 1) Extract the ZenseMe directory to any directory you want.
 2) Make sure that you installed the requirements (.NET Framework 4.5 / Visual C++)
-3) Launch ZenseMe.exe, set your Last.fm username and password in the settings.
+3) Launch ZenseMe.exe
 4) Fetch the songs from your device by clicking on "fetchsongs"
-5) Have fun scrobbling songs from your mobile devices.
+5) The first time you submit songs, allow the app to access your last.fm account
+6) Have fun scrobbling songs from your mobile devices.
 
 | Update Instructions
 When you are updating ZenseMe from a previous version make sure you "DON'T" delete the "Data" directory,
@@ -34,6 +38,11 @@ Feel free to make a donation on: http://donation.arnoldvink.com
 Zenses - Sixones (Adam Livesley)
 
 | Changelog
+v2.0.0 (10-august-2020)
+- Project revived from the dead
+- Now uses the Last.fm Web Services Scrobbling API 2.0
+- No longer requires username and password after first use
+
 v1.1.6 (23-november-2016)
 - Fixed https connection related scrobbling errors.
 - Updated sqlite files to version 1.0.103 (32-bit)

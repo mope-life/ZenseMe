@@ -94,6 +94,7 @@
     <Compile Include="DataAccessObjects\IgnoreTrackDAO.cs" />
     <Compile Include="DataAccessObjects\EntryObjectDAO.cs" />
     <Compile Include="DataAccessObjects\PlayedTrackDAO.cs" />
+    <Compile Include="Keys.cs" />
     <Compile Include="Managers\Audioscrobbler.cs" />
     <Compile Include="Managers\DeviceManager.cs" />
     <Compile Include="Managers\EntryManager.cs" />

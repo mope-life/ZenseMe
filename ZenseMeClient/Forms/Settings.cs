@@ -19,16 +19,12 @@ namespace ZenseMe.Client.Forms
         private void Settings_Load(object sender, EventArgs e)
         {
             lbl_version.Text = "By Arnold Vink\nv" + Application.ProductVersion;
-            string LastFM_Username = ConfigurationManager.AppSettings["LastFM_Username"];
-            string LastFM_Password = ConfigurationManager.AppSettings["LastFM_Password"];
             string Scrobble_BetweenTime = ConfigurationManager.AppSettings["Scrobble_BetweenTime"];
             string FetchAlbumArtist = ConfigurationManager.AppSettings["FetchAlbumArtist"];
             string FixUtcNowTime = ConfigurationManager.AppSettings["FixUtcNowTime"];
             string HttpsConnection = ConfigurationManager.AppSettings["HttpsConnection"];
             string version = Application.ProductVersion;
 
-            txt_LastFMUsername.Text = LastFM_Username;
-            txt_LastFMPassword.Text = LastFM_Password;
             txt_Scrobble_BetweenTime.Text = Scrobble_BetweenTime;
             cb_FetchAlbumArtist.Checked = FetchAlbumArtist == "1";
             cb_FixUtcNowTime.Checked = FixUtcNowTime == "1";
@@ -45,19 +41,10 @@ namespace ZenseMe.Client.Forms
         {
             Configuration Configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
-            string LastFM_Username = txt_LastFMUsername.Text;
-            string LastFM_Password = CalculateMD5(txt_LastFMPassword.Text);
             string Scrobble_BetweenTime = txt_Scrobble_BetweenTime.Text;
             int FetchAlbumArtist = cb_FetchAlbumArtist.Checked ? 1 : 0;
             int FixUtcNowTime = cb_FixUtcNowTime.Checked ? 1 : 0;
             int HttpsConnection = cb_HttpsConnection.Checked ? 1 : 0;
-
-            Configuration.AppSettings.Settings["LastFM_Username"].Value = LastFM_Username.ToString();
-
-            if (Configuration.AppSettings.Settings["LastFM_Password"].Value != txt_LastFMPassword.Text.ToString())
-            {
-                Configuration.AppSettings.Settings["LastFM_Password"].Value = LastFM_Password.ToString();
-            }
 
             Configuration.AppSettings.Settings["FetchAlbumArtist"].Value = FetchAlbumArtist.ToString();
             Configuration.AppSettings.Settings["FixUtcNowTime"].Value = FixUtcNowTime.ToString();

@@ -7,19 +7,29 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
+using System.Web.Configuration;
 using System.Windows.Forms;
+using System.Xml;
+
+using System.Web.UI.WebControls;
+using System.Data.SQLite;
+using System.Linq;
+using System.Security;
 
 namespace ZenseMe.Lib.Managers
 {
     public class Audioscrobbler
     {
-        private string ConfigUsername = ConfigurationManager.AppSettings["LastFM_Username"];
-        private string ConfigPassword = ConfigurationManager.AppSettings["LastFM_Password"];
-        private string Challenge;
-        private string NowPlayUrl;
-        private string SubmitUrl;
 
-        public bool SubmitTrack(string artist, string name, string album, int length, DateTime dateSubmitted)
+
+        /* Begin major changes by mope-life */
+
+
+
+        private string token = "";
+        private string sessionKey = ConfigurationManager.AppSettings["LastFM_SessionKey"];
+
+        public bool SubmitTrack(string artist, string track, string album, int duration, DateTime dateSubmitted)
         {
             try
             {
@@ -30,39 +40,34 @@ namespace ZenseMe.Lib.Managers
                 long TrackUnixTime = dateSubmitted.Ticks - MinTimeZone.Ticks - DateTime.Parse("01/01/1970 00:00:00", DateTimeInfo).Ticks;
                 TrackUnixTime /= 10000000;
 
-                string s = HttpUtility.UrlEncode(Challenge);
-                string i = HttpUtility.UrlEncode(TrackUnixTime.ToString());
-                string o = "P";
-                string r = "";
-                string n = "";
-                string m = "";
+                Dictionary<string, string> postData = new Dictionary<string, string>
+                {
+                    { "method", "track.scrobble" },
+                    { "artist", artist },
+                    { "track", track },
+                    { "timestamp", TrackUnixTime.ToString() },
+                    { "album", album },
+                    { "duration", duration.ToString() },
+                    { "api_key", Resources.Keys.API_KEY },
+                    { "sk", sessionKey }
+                };
 
-                HttpWebResponse HttpWebResponse = runRequest(SubmitUrl, string.Format("&s={0}&a[0]={1}&t[0]={2}&i[0]={3}&o[0]={4}&r[0]={5}&l[0]={6}&b[0]={7}&n[0]={8}&m[0]={9}", new object[] { s, HttpUtility.UrlEncode(artist), HttpUtility.UrlEncode(name), i, o, r, length, HttpUtility.UrlEncode(album), n, m }));
-                List<string> SubmitResponse = getResponseList(HttpWebResponse);
+                HttpWebResponse scrobbleResponse = PostLastFmRequest(postData);
+                XmlReader xReader = XmlReader.Create(scrobbleResponse.GetResponseStream());
 
-                if (SubmitResponse[0].Contains("OK"))
+                while (xReader.Read())
                 {
-                    Console.WriteLine("The track has been scrobbled!");
-                    return true;
+                    if (xReader.Name == "lfm")
+                    {
+                        if (xReader.GetAttribute("status") != "ok")
+                        {
+                            XmlErrors(xReader);
+                            throw new Exception();
+                        }
+                        else break;
+                    }
                 }
-                else if (SubmitResponse[0].Contains("BADSESSION"))
-                {
-                    Console.WriteLine("Invalid Session ID!");
-                    MessageBox.Show("Invalid Session ID!", "ZenseMe");
-                    return false;
-                }
-                else if (SubmitResponse[0].Contains("FAILED"))
-                {
-                    Console.WriteLine("Failed last.fm error: " + SubmitResponse[0]);
-                    MessageBox.Show("Failed last.fm error.", "ZenseMe");
-                    return false;
-                }
-                else
-                {
-                    Console.WriteLine("Failed last.fm unknown error.");
-                    MessageBox.Show("Failed last.fm unknown error.", "ZenseMe");
-                    return false;
-                }
+                return true;
             }
             catch (Exception ex)
             {
@@ -72,126 +77,138 @@ namespace ZenseMe.Lib.Managers
             }
         }
 
-        public bool ConnectLastfm()
+
+        public bool GetToken()
         {
-            try
+            Dictionary<string, string> postData = new Dictionary<string, string>
             {
-                DateTimeFormatInfo DateTimeInfo = new DateTimeFormatInfo();
-                DateTimeInfo.ShortDatePattern = @"dd/MM/yyyy HH:mm:ss";
+                {"method", "auth.getToken" },
+                {"api_key", Resources.Keys.API_KEY }
+            };
 
-                DateTime TimeZone = DateTime.UtcNow;
-                if (int.Parse(ConfigurationManager.AppSettings["FixUtcNowTime"]) >= 1) { TimeZone = DateTime.UtcNow.AddHours(1); }
+            HttpWebResponse getTokenResponse = PostLastFmRequest(postData);
+            XmlReader xReader = XmlReader.Create(getTokenResponse.GetResponseStream());
 
-                long ConnectUnixTime = TimeZone.Ticks - DateTime.Parse("01/01/1970 00:00:00", DateTimeInfo).Ticks;
-                ConnectUnixTime /= 10000000;
-
-                string LastFmToken = CalculateMD5(ConfigPassword + ConnectUnixTime.ToString());
-                string hs = "true";
-                string p = "1.2.1";
-                string c = "wmp";
-                string v = "1.0";
-                string u = HttpUtility.UrlEncode(ConfigUsername);
-                string t = HttpUtility.UrlEncode(ConnectUnixTime.ToString());
-                string a = HttpUtility.UrlEncode(LastFmToken);
-                string postData = string.Format("hs={0}&p={1}&c={2}&v={3}&u={4}&t={5}&a={6}", new object[] { hs, p, c, v, u, t, a });
-
-                string ApiUrl = "http://post.audioscrobbler.com/";
-                if (int.Parse(ConfigurationManager.AppSettings["HttpsConnection"]) >= 1) { ApiUrl = "https://post.audioscrobbler.com/"; }
-
-                HttpWebResponse HttpWebResponse = runRequest(ApiUrl, postData);
-                List<string> SubmitResponse = getResponseList(HttpWebResponse);
-
-                if (SubmitResponse[0].Contains("OK"))
+            while (xReader.Read())
+            {
+                if (xReader.Name == "lfm" && xReader.GetAttribute("status") != "ok")
                 {
-                    Console.WriteLine("Authed ok with Last.fm servers.");
-                    Challenge = SubmitResponse[1];
-                    NowPlayUrl = SubmitResponse[2];
-                    SubmitUrl = SubmitResponse[3];
+                    XmlErrors(xReader);
+                    return false;
+                }
+                else if (xReader.Name == "token")
+                {
+                    token = xReader.ReadElementContentAsString();
                     return true;
                 }
-                else if (SubmitResponse[0].Contains("BANNED"))
-                {
-                    Console.WriteLine("This client is banned from last.fm.");
-                    MessageBox.Show("Failed to authenticate with Last.fm, this client is banned from last.fm.", "ZenseMe");
-                    return false;
-                }
-                else if (SubmitResponse[0].Contains("BADAUTH"))
-                {
-                    Console.WriteLine("Wrong username or password.");
-                    MessageBox.Show("Failed to authenticate with Last.fm, wrong username or password is used.", "ZenseMe");
-                    return false;
-                }
-                else if (SubmitResponse[0].Contains("BADTIME"))
-                {
-                    Console.WriteLine("Invalid time stamp.");
-                    MessageBox.Show("Failed to authenticate with Last.fm, invalid time stamp check your time.", "ZenseMe");
-                    return false;
-                }
-                else if (SubmitResponse[0].Contains("FAILED"))
-                {
-                    Console.WriteLine("Failed last.fm error: " + SubmitResponse[0]);
-                    MessageBox.Show("Failed to authenticate with Last.fm, failed last.fm error.", "ZenseMe");
-                    return false;
-                }
-                else
-                {
-                    Console.WriteLine("Failed last.fm unknown error.");
-                    MessageBox.Show("Failed to authenticate with Last.fm, failed last.fm unknown error.", "ZenseMe");
-                    return false;
-                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Connect error: " + ex);
-                MessageBox.Show("Failed to authenticate with Last.fm, please try again.", "ZenseMe");
-                return false;
-            }
+
+            MessageBox.Show("Somehow failed getting token from last.fm.", "ZenseMe");
+            return false;
         }
 
-        private List<string> getResponseList(HttpWebResponse HttpWebResponse)
+
+        public string GetAuthUrl()
         {
-            try
-            {
-                List<string> toReturn = new List<string>();
-                StreamReader StreamReader = new StreamReader(HttpWebResponse.GetResponseStream());
-                char[] Buffer = new char[1024];
-                for (int StreamCount = StreamReader.Read(Buffer, 0, 1024); StreamCount > 0; StreamCount = StreamReader.Read(Buffer, 0, 1024))
-                {
-                    string resultData = new string(Buffer, 0, StreamCount);
-                    if (resultData.EndsWith("\n")) { toReturn.Add(resultData.Replace("\n", "")); }
-                }
-                return toReturn;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Response list error: " + ex);
-                //MessageBox.Show("No response from the last.fm server.", "ZenseMe");
-                return null;
-            }
+            string userSignInData = string.Format("api_key={0}&token={1}", Resources.Keys.API_KEY, token);
+            return string.Format("http://www.last.fm/api/auth/?{0}", userSignInData); ;
         }
 
-        public HttpWebResponse runRequest(string url, string postData)
+
+        public bool GetSession()
         {
-            try
+            Dictionary<string, string> postData = new Dictionary<string, string>
             {
-                byte[] Buffer = new UTF8Encoding().GetBytes(postData);
-                HttpWebRequest HttpWebRequest = (HttpWebRequest)WebRequest.Create(url);
-                HttpWebRequest.Method = "POST";
-                HttpWebRequest.ContentType = "application/x-www-form-urlencoded";
-                HttpWebRequest.Timeout = 10000;
-                HttpWebRequest.ContentLength = Buffer.Length;
-                Stream Stream = HttpWebRequest.GetRequestStream();
-                Stream.Write(Buffer, 0, Buffer.Length);
-                Stream.Close();
-                return (HttpWebResponse)HttpWebRequest.GetResponse();
-            }
-            catch (Exception ex)
+                {"method", "auth.getSession" },
+                {"api_key", Resources.Keys.API_KEY },
+                {"token", token }
+            };
+
+            HttpWebResponse getSessionResponse = PostLastFmRequest(postData);
+            XmlReader xReader = XmlReader.Create(getSessionResponse.GetResponseStream());
+
+            while (xReader.Read())
             {
-                Console.WriteLine("Run request error: " + ex);
-                //MessageBox.Show("Failed to request from the last.fm server.", "ZenseMe");
-                return null;
+                if (xReader.Name == "lfm" && xReader.GetAttribute("status") != "ok")
+                {
+                    XmlErrors(xReader);
+                    return false;
+                }
+                else if (xReader.Name == "key")
+                {
+                    Configuration Configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                    sessionKey = xReader.ReadElementContentAsString();
+                    Configuration.AppSettings.Settings["LastFM_SessionKey"].Value = sessionKey;
+                    Configuration.Save(ConfigurationSaveMode.Modified);
+                    return true;
+                }
             }
+
+            MessageBox.Show("Somehow failed obtaining session key.", "ZenseMe");
+            return false;
         }
+
+
+        public HttpWebResponse PostLastFmRequest(Dictionary<string, string> dataDict)
+        {
+            HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create("http://ws.audioscrobbler.com/2.0/");
+
+            byte[] Buffer = new UTF8Encoding().GetBytes(
+                BuildRequest(dataDict)
+                );
+
+            httpWebRequest.Method = "POST";
+            httpWebRequest.ContentType = "application/x-www-form-urlencoded";
+            httpWebRequest.UserAgent = string.Format("ZenseMe/{0} ( mope-life )", Application.ProductVersion);
+            httpWebRequest.Timeout = 10000;
+            httpWebRequest.ContentLength = Buffer.Length;
+
+            Stream Stream = httpWebRequest.GetRequestStream();
+            Stream.Write(Buffer, 0, Buffer.Length);
+            Stream.Close();
+
+            return (HttpWebResponse)httpWebRequest.GetResponse();
+        }
+
+
+        private string BuildRequest(Dictionary<string, string> dataDict)
+        {
+            List<string> alphaKeys = dataDict.Keys.ToList();
+            alphaKeys.Sort();
+
+            StringBuilder sigBuilder = new StringBuilder();
+            foreach (string k in alphaKeys)
+            {
+                sigBuilder.Append(k);
+                sigBuilder.Append(dataDict[k]);
+            }
+            sigBuilder.Append(Resources.Keys.API_SECRET);
+            dataDict["api_sig"] = CalculateMD5(sigBuilder.ToString());
+
+            StringBuilder postDataBuilder = new StringBuilder();
+            foreach (KeyValuePair<string, string> kvp in dataDict)
+            {
+                postDataBuilder.Append(
+                    string.Format("{0}={1}&", kvp.Key, HttpUtility.UrlEncode(kvp.Value))
+                    );
+            }
+
+            return postDataBuilder.ToString();
+        }
+
+
+        private void XmlErrors(XmlReader xReader)
+        {
+            xReader.ReadToDescendant("error");
+            string err = "Failed authentication: {0}";
+            MessageBox.Show(string.Format(err, xReader.ReadElementContentAsString()), "ZenseMe");
+        }
+
+
+
+        /* End major changes by mope-life */
+
+
 
         private string CalculateMD5(string input)
         {

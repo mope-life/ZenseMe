@@ -50,22 +50,38 @@ namespace ZenseMe.Client.Forms
 
         private void btn_scrobble_Click(object sender, EventArgs e)
         {
-            if (ConfigurationManager.AppSettings["LastFM_Username"] == "" || ConfigurationManager.AppSettings["LastFM_Password"] == "")
-            {
-                MessageBox.Show("Please set your username and password in the settings menu.", "ZenseMe");
-                Close();
-                return;
-            }
-
             if (ConfirmScrobbleList != null && ConfirmScrobbleList.Count > 0)
             {
-                //Authenticate with Last.fm
-                Audioscrobbler Audioscrobbler = new Audioscrobbler();
-                if (!Audioscrobbler.ConnectLastfm())
+                Audioscrobbler audioscrobbler = new Audioscrobbler();
+
+
+
+                /* Begin changes by mope-life*/
+
+                //Authenticate with last.fm if we don't already have a session key
+                if (ConfigurationManager.AppSettings["LastFM_SessionKey"] == "")
                 {
-                    Close();
-                    return;
+                    if (!audioscrobbler.GetToken())
+                    {
+                        Close();
+                        return;
+                    }
+                    Login login = new Login();
+
+                    login.webBrowser1.Navigate(audioscrobbler.GetAuthUrl());
+                    login.ShowDialog();
+
+                    if (!audioscrobbler.GetSession())
+                    {
+                        Close();
+                        return;
+                    }
                 }
+
+
+                /* End changes by mope-life */
+
+
 
                 //Sort the too scrobble songs
                 ConfirmScrobbleList = ConfirmScrobbleList.OrderBy(x => x.DateSubmitted).ToList();
@@ -90,7 +106,7 @@ namespace ZenseMe.Client.Forms
                         Console.WriteLine("Scrobbling: " + track.Artist + " - " + track.Name);
                         track.DateSubmitted = track.DateSubmitted.AddSeconds(Convert.ToInt32(ConfigurationManager.AppSettings["Scrobble_BetweenTime"]));
 
-                        if (!Audioscrobbler.SubmitTrack(track.Artist, track.Name, track.Album, track.LengthSeconds, track.DateSubmitted))
+                        if (!audioscrobbler.SubmitTrack(track.Artist, track.Name, track.Album, track.LengthSeconds, track.DateSubmitted))
                         {
                             Close();
                             return;
