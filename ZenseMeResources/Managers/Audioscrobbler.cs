@@ -52,21 +52,9 @@ namespace ZenseMe.Lib.Managers
                     { "sk", sessionKey }
                 };
 
-                HttpWebResponse scrobbleResponse = PostLastFmRequest(postData);
-                XmlReader xReader = XmlReader.Create(scrobbleResponse.GetResponseStream());
+                HttpWebRequest httpWebRequest = BuildHttpRequest(postData);
+                HttpWebResponse httpWebResponse = CheckResponse(httpWebRequest);
 
-                while (xReader.Read())
-                {
-                    if (xReader.Name == "lfm")
-                    {
-                        if (xReader.GetAttribute("status") != "ok")
-                        {
-                            XmlErrors(xReader);
-                            throw new Exception();
-                        }
-                        else break;
-                    }
-                }
                 return true;
             }
             catch (Exception ex)
@@ -78,6 +66,7 @@ namespace ZenseMe.Lib.Managers
         }
 
 
+
         public bool GetToken()
         {
             Dictionary<string, string> postData = new Dictionary<string, string>
@@ -86,34 +75,37 @@ namespace ZenseMe.Lib.Managers
                 {"api_key", Resources.Keys.API_KEY }
             };
 
-            HttpWebResponse getTokenResponse = PostLastFmRequest(postData);
-            XmlReader xReader = XmlReader.Create(getTokenResponse.GetResponseStream());
+            HttpWebRequest httpWebRequest = BuildHttpRequest(postData);
+            HttpWebResponse httpWebResponse = CheckResponse(httpWebRequest);
 
-            while (xReader.Read())
+            if (httpWebResponse != null)
             {
-                if (xReader.Name == "lfm" && xReader.GetAttribute("status") != "ok")
+                XmlDocument xmlDocument = new XmlDocument();
+                xmlDocument.Load(httpWebResponse.GetResponseStream());
+
+                try
                 {
-                    XmlErrors(xReader);
-                    return false;
-                }
-                else if (xReader.Name == "token")
-                {
-                    token = xReader.ReadElementContentAsString();
+                    token = xmlDocument.GetElementsByTagName("token")[0].InnerText;
                     return true;
                 }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("getToken error: " + ex);
+                    MessageBox.Show("Unexpected xml response while retrieving token.", "ZenseMe");
+                    return false;
+                }
             }
-
-            MessageBox.Show("Somehow failed getting token from last.fm.", "ZenseMe");
-            return false;
+            else
+            {
+                return false;
+            }
         }
-
 
         public string GetAuthUrl()
         {
             string userSignInData = string.Format("api_key={0}&token={1}", Resources.Keys.API_KEY, token);
             return string.Format("http://www.last.fm/api/auth/?{0}", userSignInData); ;
         }
-
 
         public bool GetSession()
         {
@@ -124,66 +116,80 @@ namespace ZenseMe.Lib.Managers
                 {"token", token }
             };
 
-            HttpWebResponse getSessionResponse = PostLastFmRequest(postData);
-            XmlReader xReader = XmlReader.Create(getSessionResponse.GetResponseStream());
+            HttpWebRequest httpWebRequest = BuildHttpRequest(postData);
+            HttpWebResponse httpWebResponse = CheckResponse(httpWebRequest);
 
-            while (xReader.Read())
+            if (httpWebResponse != null)
             {
-                if (xReader.Name == "lfm" && xReader.GetAttribute("status") != "ok")
+                XmlDocument xmlDocument = new XmlDocument();
+                xmlDocument.Load(httpWebResponse.GetResponseStream());
+                Configuration Configuration =
+                    ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+                try
                 {
-                    XmlErrors(xReader);
-                    return false;
-                }
-                else if (xReader.Name == "key")
-                {
-                    Configuration Configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-                    sessionKey = xReader.ReadElementContentAsString();
+                    sessionKey = xmlDocument.GetElementsByTagName("key")[0].InnerText;
+                    string userName = xmlDocument.GetElementsByTagName("name")[0].InnerText;
+
                     Configuration.AppSettings.Settings["LastFM_SessionKey"].Value = sessionKey;
+                    Configuration.AppSettings.Settings["LastFM_Username"].Value = userName;
                     Configuration.Save(ConfigurationSaveMode.Modified);
+                    ConfigurationManager.RefreshSection("appSettings");
+
                     return true;
                 }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("getSession error: " + ex);
+                    MessageBox.Show("Unexpected xml response while retrieving session key.", "ZenseMe");
+                    return false;
+                }
             }
-
-            MessageBox.Show("Somehow failed obtaining session key.", "ZenseMe");
-            return false;
+            else
+            {
+                return false;
+            }
         }
 
-
-        public HttpWebResponse PostLastFmRequest(Dictionary<string, string> dataDict)
+        private HttpWebRequest BuildHttpRequest(Dictionary<string, string> dataDict, bool signed = true)
         {
             HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create("http://ws.audioscrobbler.com/2.0/");
 
             byte[] Buffer = new UTF8Encoding().GetBytes(
-                BuildRequest(dataDict)
+                ProcessPostData(dataDict, signed)
                 );
 
             httpWebRequest.Method = "POST";
             httpWebRequest.ContentType = "application/x-www-form-urlencoded";
             httpWebRequest.UserAgent = string.Format("ZenseMe/{0} ( mope-life )", Application.ProductVersion);
-            httpWebRequest.Timeout = 10000;
+            httpWebRequest.Timeout = 5000;
             httpWebRequest.ContentLength = Buffer.Length;
 
             Stream Stream = httpWebRequest.GetRequestStream();
             Stream.Write(Buffer, 0, Buffer.Length);
             Stream.Close();
 
-            return (HttpWebResponse)httpWebRequest.GetResponse();
+            return httpWebRequest;
         }
 
-
-        private string BuildRequest(Dictionary<string, string> dataDict)
+        private string ProcessPostData(Dictionary<string, string> dataDict, bool signed)
         {
-            List<string> alphaKeys = dataDict.Keys.ToList();
-            alphaKeys.Sort();
-
-            StringBuilder sigBuilder = new StringBuilder();
-            foreach (string k in alphaKeys)
+            // Signing process described in Section 8, here: https://www.last.fm/api/authspec#_8-signing-calls
+            // Not all methods need be signed (i.e. user.getInfo), which is why this is conditional
+            if (signed)
             {
-                sigBuilder.Append(k);
-                sigBuilder.Append(dataDict[k]);
+                List<string> alphaKeys = dataDict.Keys.ToList();
+                alphaKeys.Sort();
+
+                StringBuilder sigBuilder = new StringBuilder();
+                foreach (string k in alphaKeys)
+                {
+                    sigBuilder.Append(k);
+                    sigBuilder.Append(dataDict[k]);
+                }
+                sigBuilder.Append(Resources.Keys.API_SECRET);
+                dataDict["api_sig"] = CalculateMD5(sigBuilder.ToString());
             }
-            sigBuilder.Append(Resources.Keys.API_SECRET);
-            dataDict["api_sig"] = CalculateMD5(sigBuilder.ToString());
 
             StringBuilder postDataBuilder = new StringBuilder();
             foreach (KeyValuePair<string, string> kvp in dataDict)
@@ -196,14 +202,41 @@ namespace ZenseMe.Lib.Managers
             return postDataBuilder.ToString();
         }
 
-
-        private void XmlErrors(XmlReader xReader)
+        private HttpWebResponse CheckResponse(HttpWebRequest request)
         {
-            xReader.ReadToDescendant("error");
-            string err = "Failed authentication: {0}";
-            MessageBox.Show(string.Format(err, xReader.ReadElementContentAsString()), "ZenseMe");
-        }
+            try
+            {
+                return request.GetResponse() as HttpWebResponse;
+            }
+            catch (WebException ex)
+            {
+                Console.WriteLine("http error: " + ex.Message);
 
+                // I think this should occur as long as the request didn't time
+                // out or get rejected by last.fm server
+                if (ex.Status == WebExceptionStatus.ProtocolError)
+                {
+                    HttpWebResponse httpWebResponse = ex.Response as HttpWebResponse;
+
+                    XmlDocument xmlDocument = new XmlDocument();
+                    xmlDocument.Load(httpWebResponse.GetResponseStream());
+
+                    XmlNode errorNode = xmlDocument.GetElementsByTagName("error")[0];
+                    string lastFmErrorCoode = errorNode.Attributes["code"].Value;
+                    string lastFmErrorString = errorNode.InnerText;
+                    Console.WriteLine("last.fm says: code " + lastFmErrorCoode + ": " + lastFmErrorString);
+                    MessageBox.Show("last.fm says: code " + lastFmErrorCoode + ": " + lastFmErrorString);
+
+                    MessageBox.Show("There was a problem getting authentication from last.fm");
+                }
+                else
+                {
+                    throw new WebException(ex.Message, ex);
+                }
+
+                return null;
+            }
+        }
 
 
         /* End major changes by mope-life */

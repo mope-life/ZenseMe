@@ -9,6 +9,7 @@ namespace ZenseMe.Lib.Objects
         private string _iDevice;
         private string _sArtist;
         private string _sAlbum;
+        private string _sGenre;
         private int _iTrack;
         private int _iPlayCount;
         private string _sName;
@@ -47,6 +48,12 @@ namespace ZenseMe.Lib.Objects
         {
             get { return _sAlbum; }
             set { _sAlbum = value; }
+        }
+
+        public string Genre
+        {
+            get { return _sGenre; }
+            set { _sGenre = value; }
         }
 
         public int Track

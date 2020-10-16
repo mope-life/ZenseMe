@@ -52,36 +52,14 @@ namespace ZenseMe.Client.Forms
         {
             if (ConfirmScrobbleList != null && ConfirmScrobbleList.Count > 0)
             {
-                Audioscrobbler audioscrobbler = new Audioscrobbler();
-
-
-
-                /* Begin changes by mope-life*/
-
-                //Authenticate with last.fm if we don't already have a session key
-                if (ConfigurationManager.AppSettings["LastFM_SessionKey"] == "")
+                Authenticator authenticator = new Authenticator();
+                if (!authenticator.Authenticate())
                 {
-                    if (!audioscrobbler.GetToken())
-                    {
-                        Close();
-                        return;
-                    }
-                    Login login = new Login();
-
-                    login.webBrowser1.Navigate(audioscrobbler.GetAuthUrl());
-                    login.ShowDialog();
-
-                    if (!audioscrobbler.GetSession())
-                    {
-                        Close();
-                        return;
-                    }
+                    Close();
+                    return;
                 }
 
-
-                /* End changes by mope-life */
-
-
+                Audioscrobbler audioscrobbler = new Audioscrobbler();
 
                 //Sort the too scrobble songs
                 ConfirmScrobbleList = ConfirmScrobbleList.OrderBy(x => x.DateSubmitted).ToList();

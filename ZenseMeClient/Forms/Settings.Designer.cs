@@ -41,6 +41,9 @@
             this.lbl_FixUtcNowTime = new System.Windows.Forms.Label();
             this.cb_HttpsConnection = new System.Windows.Forms.CheckBox();
             this.lbl_HttpsConnection = new System.Windows.Forms.Label();
+            this.lbl_Maintainer = new System.Windows.Forms.Label();
+            this.lbl_Author = new System.Windows.Forms.Label();
+            this.btn_Close = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btn_Save
@@ -99,7 +102,8 @@
             // lbl_version
             // 
             this.lbl_version.AutoSize = true;
-            this.lbl_version.Location = new System.Drawing.Point(18, 153);
+            this.lbl_version.Location = new System.Drawing.Point(10, 198);
+            this.lbl_version.Margin = new System.Windows.Forms.Padding(1);
             this.lbl_version.Name = "lbl_version";
             this.lbl_version.Size = new System.Drawing.Size(45, 13);
             this.lbl_version.TabIndex = 16;
@@ -151,12 +155,46 @@
             this.lbl_HttpsConnection.TabIndex = 20;
             this.lbl_HttpsConnection.Text = "Use HTTPS api connection";
             // 
+            // lbl_Maintainer
+            // 
+            this.lbl_Maintainer.AutoSize = true;
+            this.lbl_Maintainer.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_Maintainer.Location = new System.Drawing.Point(10, 213);
+            this.lbl_Maintainer.Margin = new System.Windows.Forms.Padding(1);
+            this.lbl_Maintainer.Name = "lbl_Maintainer";
+            this.lbl_Maintainer.Size = new System.Drawing.Size(82, 13);
+            this.lbl_Maintainer.TabIndex = 22;
+            this.lbl_Maintainer.Text = "By Dustin Ross";
+            // 
+            // lbl_Author
+            // 
+            this.lbl_Author.AutoSize = true;
+            this.lbl_Author.Location = new System.Drawing.Point(153, 213);
+            this.lbl_Author.Margin = new System.Windows.Forms.Padding(1);
+            this.lbl_Author.Name = "lbl_Author";
+            this.lbl_Author.Size = new System.Drawing.Size(136, 13);
+            this.lbl_Author.TabIndex = 23;
+            this.lbl_Author.Text = "Originally by Arnold Vink";
+            // 
+            // btn_Close
+            // 
+            this.btn_Close.Location = new System.Drawing.Point(157, 155);
+            this.btn_Close.Name = "btn_Close";
+            this.btn_Close.Size = new System.Drawing.Size(62, 23);
+            this.btn_Close.TabIndex = 24;
+            this.btn_Close.Text = "Close";
+            this.btn_Close.UseVisualStyleBackColor = true;
+            this.btn_Close.Click += new System.EventHandler(this.btn_Close_Click);
+            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(299, 236);
+            this.Controls.Add(this.btn_Close);
+            this.Controls.Add(this.lbl_Author);
+            this.Controls.Add(this.lbl_Maintainer);
             this.Controls.Add(this.cb_HttpsConnection);
             this.Controls.Add(this.lbl_HttpsConnection);
             this.Controls.Add(this.cb_FixUtcNowTime);
@@ -197,5 +235,8 @@
         private System.Windows.Forms.Label lbl_FixUtcNowTime;
         private System.Windows.Forms.CheckBox cb_HttpsConnection;
         private System.Windows.Forms.Label lbl_HttpsConnection;
+        private System.Windows.Forms.Label lbl_Maintainer;
+        private System.Windows.Forms.Label lbl_Author;
+        private System.Windows.Forms.Button btn_Close;
     }
 }

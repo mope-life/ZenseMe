@@ -73,6 +73,20 @@ namespace ZenseMe.Lib.DataAccessObjects
             }
         }
 
+        public List<string> FetchUnique(string field)
+        {
+            field = field.ToLower();
+
+            DataSet dataSet = _hDatabase.Fetch("SELECT DISTINCT " + field + " FROM device_tracks");
+            List<string> uniqueValues = new List<string>();
+            foreach (DataRow row in dataSet.Tables[0].Rows)
+            {
+                uniqueValues.Add(row[field] as string);
+            }
+
+            return uniqueValues;
+        }
+
         public EntryObject LoadObject(string persistentId)
         {
             DataSet dataSet = _hDatabase.Fetch("SELECT * FROM device_tracks WHERE persistent_id = '" + persistentId + "' LIMIT 1");
@@ -110,6 +124,7 @@ namespace ZenseMe.Lib.DataAccessObjects
                         + "[name], "
                         + "[artist], "
                         + "[album], "
+                        + "[genre], "
                         + "[length], "
                         + "[device], "
                         + "[play_count], "
@@ -120,6 +135,7 @@ namespace ZenseMe.Lib.DataAccessObjects
                         + "@name, "
                         + "@artist, "
                         + "@album, "
+                        + "@genre, "
                         + "@length, "
                         + "@device, "
                         + "@playCount, "
@@ -132,6 +148,7 @@ namespace ZenseMe.Lib.DataAccessObjects
                     new SQLiteParameter("@name", entryObject.Name),
                     new SQLiteParameter("@artist", entryObject.Artist),
                     new SQLiteParameter("@album", entryObject.Album),
+                    new SQLiteParameter("@genre", entryObject.Genre),
                     new SQLiteParameter("@length", entryObject.Length),
                     new SQLiteParameter("@device", entryObject.Device),
                     new SQLiteParameter("@playCount", entryObject.PlayCount),
@@ -162,13 +179,14 @@ namespace ZenseMe.Lib.DataAccessObjects
                     }
                 }
 
-                string sqlQueryUpdate = "UPDATE device_tracks SET id = @id, name = @name, artist = @artist, album = @album, length = @length, device = @device, play_count = @playCount, play_count_his = @playCountHis, filename = @filename WHERE persistent_id = @persistentId";
+                string sqlQueryUpdate = "UPDATE device_tracks SET id = @id, name = @name, artist = @artist, album = @album, genre = @genre, length = @length, device = @device, play_count = @playCount, play_count_his = @playCountHis, filename = @filename WHERE persistent_id = @persistentId";
                 _hDatabase.Execute(sqlQueryUpdate,
                     new SQLiteParameter("@id", entryObject.Id),
                     new SQLiteParameter("@persistentId", entryObject.PersistentId),
                     new SQLiteParameter("@name", entryObject.Name),
                     new SQLiteParameter("@artist", entryObject.Artist),
                     new SQLiteParameter("@album", entryObject.Album),
+                    new SQLiteParameter("@genre", entryObject.Genre),
                     new SQLiteParameter("@length", entryObject.Length),
                     new SQLiteParameter("@device", entryObject.Device),
                     new SQLiteParameter("@playCount", entryObject.PlayCount),
@@ -186,6 +204,7 @@ namespace ZenseMe.Lib.DataAccessObjects
             entryObject.Name = row["name"] as string;
             entryObject.Artist = row["artist"] as string;
             entryObject.Album = row["album"] as string;
+            entryObject.Genre = row["genre"] as string;
             entryObject.Length = (int)((long)row["length"]);
             entryObject.PlayCount = (int)((long)row["play_count"]);
             entryObject.PlayCountHis = (int)((long)row["play_count_his"]);

@@ -30,12 +30,6 @@ namespace ZenseMe.Client.Forms
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
-            this.main_ContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.main_ContextMenuSelectAll = new System.Windows.Forms.ToolStripMenuItem();
-            this.main_ContextMenuSplitter = new System.Windows.Forms.ToolStripSeparator();
-            this.main_ContextMenuSelectArtist = new System.Windows.Forms.ToolStripMenuItem();
-            this.main_ContextMenuSelectAlbum = new System.Windows.Forms.ToolStripMenuItem();
-            this.main_ContextMenuSelectDevice = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,6 +40,10 @@ namespace ZenseMe.Client.Forms
             this.LeftToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.ContentPanel = new System.Windows.Forms.ToolStripContentPanel();
             this.TopToolStripPanel = new System.Windows.Forms.ToolStripPanel();
+            this.tooltip_SubmitTracks = new System.Windows.Forms.ToolTip(this.components);
+            this.button_SkipTracks = new System.Windows.Forms.Button();
+            this.button_SubmitTracks = new System.Windows.Forms.Button();
+            this.button_IgnoreTracks = new System.Windows.Forms.Button();
             this.main_ToolStripContainer = new System.Windows.Forms.ToolStripContainer();
             this.main_StatusStrip = new System.Windows.Forms.StatusStrip();
             this.main_StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -75,22 +73,34 @@ namespace ZenseMe.Client.Forms
             this.lbl_DevManufacturer = new System.Windows.Forms.Label();
             this.lbl_DevName = new System.Windows.Forms.Label();
             this.main_RecentlyPlayedTab = new System.Windows.Forms.TabPage();
-            this.main_SkipTracksButton = new System.Windows.Forms.Button();
-            this.main_IgnoreTracksButton = new System.Windows.Forms.Button();
+            this.box_FilteredSelectionSubmit = new System.Windows.Forms.GroupBox();
+            this.combo_QueryTypeSubmit = new System.Windows.Forms.ComboBox();
+            this.combo_QueryTextSubmit = new System.Windows.Forms.ComboBox();
+            this.button_SelectQuerySubmit = new System.Windows.Forms.Button();
+            this.button_DeselectQuerySubmit = new System.Windows.Forms.Button();
+            this.button_SelectNoneSubmit = new System.Windows.Forms.Button();
+            this.button_SelectAllSubmit = new System.Windows.Forms.Button();
+            this.box_SubmitTracks = new System.Windows.Forms.GroupBox();
+            this.box_SubmitDate = new System.Windows.Forms.GroupBox();
             this.main_SubmitDate = new System.Windows.Forms.DateTimePicker();
-            this.main_SubmitTracksButton = new System.Windows.Forms.Button();
-            this.main_SubmitDateLabel = new System.Windows.Forms.Label();
-            this.main_IgnoredTracksTab = new System.Windows.Forms.TabPage();
-            this.main_UnignoreTracksButton = new System.Windows.Forms.Button();
-            this.main_HistoryTab = new System.Windows.Forms.TabPage();
-            this.main_AllTracksTab = new System.Windows.Forms.TabPage();
-            this.main_SelectAllButton = new System.Windows.Forms.Button();
             this.main_SubmitContentView = new ZenseMe.Client.Forms.ContentView();
+            this.main_IgnoredTracksTab = new System.Windows.Forms.TabPage();
+            this.box_FilteredSelectionIgnore = new System.Windows.Forms.GroupBox();
+            this.combo_QueryTypeIgnore = new System.Windows.Forms.ComboBox();
+            this.combo_QueryTextIgnore = new System.Windows.Forms.ComboBox();
+            this.button_SelectQueryIgnore = new System.Windows.Forms.Button();
+            this.button_DeselectQueryIgnore = new System.Windows.Forms.Button();
+            this.button_SelectNoneIgnore = new System.Windows.Forms.Button();
+            this.button_SelectAllIgnore = new System.Windows.Forms.Button();
+            this.button_UnignoreTracks = new System.Windows.Forms.Button();
             this.main_IgnoredTracksContentView = new ZenseMe.Client.Forms.ContentView();
+            this.main_HistoryTab = new System.Windows.Forms.TabPage();
             this.main_HistoryContentView = new ZenseMe.Client.Forms.ContentView();
+            this.main_AllTracksTab = new System.Windows.Forms.TabPage();
             this.main_AllTracksContentView = new ZenseMe.Client.Forms.ContentView();
-            this.main_UnignoreSelectAllButton = new System.Windows.Forms.Button();
-            this.main_ContextMenu.SuspendLayout();
+            this.contentViewBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.button_LinkLastFM = new System.Windows.Forms.Button();
+            this.button_DetachLastFM = new System.Windows.Forms.Button();
             this.main_ToolStripContainer.BottomToolStripPanel.SuspendLayout();
             this.main_ToolStripContainer.ContentPanel.SuspendLayout();
             this.main_ToolStripContainer.SuspendLayout();
@@ -101,55 +111,15 @@ namespace ZenseMe.Client.Forms
             this.main_LastFMBox.SuspendLayout();
             this.main_DeviceBox.SuspendLayout();
             this.main_RecentlyPlayedTab.SuspendLayout();
+            this.box_FilteredSelectionSubmit.SuspendLayout();
+            this.box_SubmitTracks.SuspendLayout();
+            this.box_SubmitDate.SuspendLayout();
             this.main_IgnoredTracksTab.SuspendLayout();
+            this.box_FilteredSelectionIgnore.SuspendLayout();
             this.main_HistoryTab.SuspendLayout();
             this.main_AllTracksTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.contentViewBindingSource)).BeginInit();
             this.SuspendLayout();
-            // 
-            // main_ContextMenu
-            // 
-            this.main_ContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.main_ContextMenuSelectAll,
-            this.main_ContextMenuSplitter,
-            this.main_ContextMenuSelectArtist,
-            this.main_ContextMenuSelectAlbum,
-            this.main_ContextMenuSelectDevice});
-            this.main_ContextMenu.Name = "_cSubmitContentViewContextMenu";
-            this.main_ContextMenu.ShowImageMargin = false;
-            this.main_ContextMenu.Size = new System.Drawing.Size(132, 98);
-            // 
-            // main_ContextMenuSelectAll
-            // 
-            this.main_ContextMenuSelectAll.Name = "main_ContextMenuSelectAll";
-            this.main_ContextMenuSelectAll.Size = new System.Drawing.Size(131, 22);
-            this.main_ContextMenuSelectAll.Text = "Select All/None";
-            this.main_ContextMenuSelectAll.Click += new System.EventHandler(this._cSubmitSelectAllContextItem_Click);
-            // 
-            // main_ContextMenuSplitter
-            // 
-            this.main_ContextMenuSplitter.Name = "main_ContextMenuSplitter";
-            this.main_ContextMenuSplitter.Size = new System.Drawing.Size(128, 6);
-            // 
-            // main_ContextMenuSelectArtist
-            // 
-            this.main_ContextMenuSelectArtist.Name = "main_ContextMenuSelectArtist";
-            this.main_ContextMenuSelectArtist.Size = new System.Drawing.Size(131, 22);
-            this.main_ContextMenuSelectArtist.Text = "Select Artist";
-            this.main_ContextMenuSelectArtist.Click += new System.EventHandler(this._cSubmitSelectArtistContextItem_Click);
-            // 
-            // main_ContextMenuSelectAlbum
-            // 
-            this.main_ContextMenuSelectAlbum.Name = "main_ContextMenuSelectAlbum";
-            this.main_ContextMenuSelectAlbum.Size = new System.Drawing.Size(131, 22);
-            this.main_ContextMenuSelectAlbum.Text = "Select Album";
-            this.main_ContextMenuSelectAlbum.Click += new System.EventHandler(this._cSubmitSelectAlbumContextItem_Click);
-            // 
-            // main_ContextMenuSelectDevice
-            // 
-            this.main_ContextMenuSelectDevice.Name = "main_ContextMenuSelectDevice";
-            this.main_ContextMenuSelectDevice.Size = new System.Drawing.Size(131, 22);
-            this.main_ContextMenuSelectDevice.Text = "Select Device";
-            this.main_ContextMenuSelectDevice.Click += new System.EventHandler(this._cSubmitSelectDeviceContextItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
@@ -212,6 +182,44 @@ namespace ZenseMe.Client.Forms
             this.TopToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this.TopToolStripPanel.Size = new System.Drawing.Size(0, 0);
             // 
+            // button_SkipTracks
+            // 
+            this.button_SkipTracks.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_SkipTracks.Location = new System.Drawing.Point(92, 25);
+            this.button_SkipTracks.Name = "button_SkipTracks";
+            this.button_SkipTracks.Size = new System.Drawing.Size(63, 21);
+            this.button_SkipTracks.TabIndex = 1;
+            this.button_SkipTracks.Text = "Skip";
+            this.tooltip_SubmitTracks.SetToolTip(this.button_SkipTracks, "Don\'t scrobble these track plays. Next time this track is played, scrobble as nor" +
+        "mal.");
+            this.button_SkipTracks.UseVisualStyleBackColor = true;
+            this.button_SkipTracks.Click += new System.EventHandler(this.button_SkipTracks_Click);
+            // 
+            // button_SubmitTracks
+            // 
+            this.button_SubmitTracks.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_SubmitTracks.Location = new System.Drawing.Point(6, 25);
+            this.button_SubmitTracks.Name = "button_SubmitTracks";
+            this.button_SubmitTracks.Size = new System.Drawing.Size(80, 21);
+            this.button_SubmitTracks.TabIndex = 0;
+            this.button_SubmitTracks.Text = "Scrobble";
+            this.tooltip_SubmitTracks.SetToolTip(this.button_SubmitTracks, "Send these tracks to last.fm.");
+            this.button_SubmitTracks.UseVisualStyleBackColor = true;
+            this.button_SubmitTracks.Click += new System.EventHandler(this.button_SubmitTracks_Click);
+            // 
+            // button_IgnoreTracks
+            // 
+            this.button_IgnoreTracks.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_IgnoreTracks.Location = new System.Drawing.Point(161, 25);
+            this.button_IgnoreTracks.Name = "button_IgnoreTracks";
+            this.button_IgnoreTracks.Size = new System.Drawing.Size(68, 21);
+            this.button_IgnoreTracks.TabIndex = 2;
+            this.button_IgnoreTracks.Text = "Ignore";
+            this.tooltip_SubmitTracks.SetToolTip(this.button_IgnoreTracks, "Ignore these track plays and all future plays of this track. Don\'t send to last.f" +
+        "m.");
+            this.button_IgnoreTracks.UseVisualStyleBackColor = true;
+            this.button_IgnoreTracks.Click += new System.EventHandler(this.button_IgnoreTracks_Click);
+            // 
             // main_ToolStripContainer
             // 
             // 
@@ -235,6 +243,7 @@ namespace ZenseMe.Client.Forms
             // 
             // main_StatusStrip
             // 
+            this.main_StatusStrip.AutoSize = false;
             this.main_StatusStrip.BackColor = System.Drawing.SystemColors.ControlLight;
             this.main_StatusStrip.Dock = System.Windows.Forms.DockStyle.None;
             this.main_StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -256,6 +265,7 @@ namespace ZenseMe.Client.Forms
             this.main_StatusText.Name = "main_StatusText";
             this.main_StatusText.Size = new System.Drawing.Size(178, 17);
             this.main_StatusText.Text = "Ready, please select your device.";
+            this.main_StatusText.TextChanged += new System.EventHandler(this.main_StatusText_TextChanged);
             // 
             // main_TabControl
             // 
@@ -440,7 +450,7 @@ namespace ZenseMe.Client.Forms
             this.lbl_TracksScrobbled.AutoSize = true;
             this.lbl_TracksScrobbled.Location = new System.Drawing.Point(6, 34);
             this.lbl_TracksScrobbled.Name = "lbl_TracksScrobbled";
-            this.lbl_TracksScrobbled.Size = new System.Drawing.Size(103, 13);
+            this.lbl_TracksScrobbled.Size = new System.Drawing.Size(104, 13);
             this.lbl_TracksScrobbled.TabIndex = 8;
             this.lbl_TracksScrobbled.Text = "Tracks scrobbled: 0";
             // 
@@ -449,7 +459,7 @@ namespace ZenseMe.Client.Forms
             this.lbl_TracksToScrobble.AutoSize = true;
             this.lbl_TracksToScrobble.Location = new System.Drawing.Point(6, 50);
             this.lbl_TracksToScrobble.Name = "lbl_TracksToScrobble";
-            this.lbl_TracksToScrobble.Size = new System.Drawing.Size(110, 13);
+            this.lbl_TracksToScrobble.Size = new System.Drawing.Size(111, 13);
             this.lbl_TracksToScrobble.TabIndex = 7;
             this.lbl_TracksToScrobble.Text = "Tracks to scrobble: 0";
             // 
@@ -458,7 +468,7 @@ namespace ZenseMe.Client.Forms
             this.lbl_TotalTracksStored.AutoSize = true;
             this.lbl_TotalTracksStored.Location = new System.Drawing.Point(6, 18);
             this.lbl_TotalTracksStored.Name = "lbl_TotalTracksStored";
-            this.lbl_TotalTracksStored.Size = new System.Drawing.Size(112, 13);
+            this.lbl_TotalTracksStored.Size = new System.Drawing.Size(113, 13);
             this.lbl_TotalTracksStored.TabIndex = 6;
             this.lbl_TotalTracksStored.Text = "Total tracks stored: 0";
             // 
@@ -467,12 +477,14 @@ namespace ZenseMe.Client.Forms
             this.main_LastFMBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.main_LastFMBox.AutoSize = true;
+            this.main_LastFMBox.Controls.Add(this.button_DetachLastFM);
+            this.main_LastFMBox.Controls.Add(this.button_LinkLastFM);
             this.main_LastFMBox.Controls.Add(this.lbl_FMLastScrobble);
             this.main_LastFMBox.Controls.Add(this.lbl_FMUsername);
             this.main_LastFMBox.ForeColor = System.Drawing.SystemColors.ControlText;
             this.main_LastFMBox.Location = new System.Drawing.Point(462, 158);
             this.main_LastFMBox.Name = "main_LastFMBox";
-            this.main_LastFMBox.Size = new System.Drawing.Size(456, 140);
+            this.main_LastFMBox.Size = new System.Drawing.Size(456, 143);
             this.main_LastFMBox.TabIndex = 1;
             this.main_LastFMBox.TabStop = false;
             this.main_LastFMBox.Text = "Last.fm";
@@ -527,7 +539,7 @@ namespace ZenseMe.Client.Forms
             this.lbl_DevBatteryLevel.AutoSize = true;
             this.lbl_DevBatteryLevel.Location = new System.Drawing.Point(5, 106);
             this.lbl_DevBatteryLevel.Name = "lbl_DevBatteryLevel";
-            this.lbl_DevBatteryLevel.Size = new System.Drawing.Size(74, 13);
+            this.lbl_DevBatteryLevel.Size = new System.Drawing.Size(73, 13);
             this.lbl_DevBatteryLevel.TabIndex = 8;
             this.lbl_DevBatteryLevel.Text = "Battery Level:";
             // 
@@ -569,12 +581,11 @@ namespace ZenseMe.Client.Forms
             // 
             // main_RecentlyPlayedTab
             // 
-            this.main_RecentlyPlayedTab.Controls.Add(this.main_SelectAllButton);
-            this.main_RecentlyPlayedTab.Controls.Add(this.main_SkipTracksButton);
-            this.main_RecentlyPlayedTab.Controls.Add(this.main_IgnoreTracksButton);
-            this.main_RecentlyPlayedTab.Controls.Add(this.main_SubmitDate);
-            this.main_RecentlyPlayedTab.Controls.Add(this.main_SubmitTracksButton);
-            this.main_RecentlyPlayedTab.Controls.Add(this.main_SubmitDateLabel);
+            this.main_RecentlyPlayedTab.Controls.Add(this.box_FilteredSelectionSubmit);
+            this.main_RecentlyPlayedTab.Controls.Add(this.button_SelectNoneSubmit);
+            this.main_RecentlyPlayedTab.Controls.Add(this.button_SelectAllSubmit);
+            this.main_RecentlyPlayedTab.Controls.Add(this.box_SubmitTracks);
+            this.main_RecentlyPlayedTab.Controls.Add(this.box_SubmitDate);
             this.main_RecentlyPlayedTab.Controls.Add(this.main_SubmitContentView);
             this.main_RecentlyPlayedTab.Location = new System.Drawing.Point(4, 22);
             this.main_RecentlyPlayedTab.Name = "main_RecentlyPlayedTab";
@@ -585,64 +596,139 @@ namespace ZenseMe.Client.Forms
             this.main_RecentlyPlayedTab.UseVisualStyleBackColor = true;
             this.main_RecentlyPlayedTab.Enter += new System.EventHandler(this._cSubmitTab_Enter);
             // 
-            // main_SkipTracksButton
+            // box_FilteredSelectionSubmit
             // 
-            this.main_SkipTracksButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.main_SkipTracksButton.Location = new System.Drawing.Point(655, 6);
-            this.main_SkipTracksButton.Name = "main_SkipTracksButton";
-            this.main_SkipTracksButton.Size = new System.Drawing.Size(73, 23);
-            this.main_SkipTracksButton.TabIndex = 4;
-            this.main_SkipTracksButton.Text = "Skip Tracks";
-            this.main_SkipTracksButton.UseVisualStyleBackColor = true;
-            this.main_SkipTracksButton.Click += new System.EventHandler(this._cSkipTracksButton_Click);
+            this.box_FilteredSelectionSubmit.Controls.Add(this.combo_QueryTypeSubmit);
+            this.box_FilteredSelectionSubmit.Controls.Add(this.combo_QueryTextSubmit);
+            this.box_FilteredSelectionSubmit.Controls.Add(this.button_SelectQuerySubmit);
+            this.box_FilteredSelectionSubmit.Controls.Add(this.button_DeselectQuerySubmit);
+            this.box_FilteredSelectionSubmit.Location = new System.Drawing.Point(107, 6);
+            this.box_FilteredSelectionSubmit.Name = "box_FilteredSelectionSubmit";
+            this.box_FilteredSelectionSubmit.Size = new System.Drawing.Size(404, 52);
+            this.box_FilteredSelectionSubmit.TabIndex = 2;
+            this.box_FilteredSelectionSubmit.TabStop = false;
+            this.box_FilteredSelectionSubmit.Text = "Filtered Selection";
             // 
-            // main_IgnoreTracksButton
+            // combo_QueryTypeSubmit
             // 
-            this.main_IgnoreTracksButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.main_IgnoreTracksButton.Location = new System.Drawing.Point(734, 6);
-            this.main_IgnoreTracksButton.Name = "main_IgnoreTracksButton";
-            this.main_IgnoreTracksButton.Size = new System.Drawing.Size(85, 23);
-            this.main_IgnoreTracksButton.TabIndex = 3;
-            this.main_IgnoreTracksButton.Text = "Ignore Tracks";
-            this.main_IgnoreTracksButton.UseVisualStyleBackColor = true;
-            this.main_IgnoreTracksButton.Click += new System.EventHandler(this._cIgnoreTracksButton_Click);
+            this.combo_QueryTypeSubmit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.combo_QueryTypeSubmit.FormattingEnabled = true;
+            this.combo_QueryTypeSubmit.Items.AddRange(new object[] {
+            "All",
+            "Artist",
+            "Album",
+            "Genre",
+            "Device"});
+            this.combo_QueryTypeSubmit.Location = new System.Drawing.Point(6, 25);
+            this.combo_QueryTypeSubmit.Name = "combo_QueryTypeSubmit";
+            this.combo_QueryTypeSubmit.Size = new System.Drawing.Size(83, 21);
+            this.combo_QueryTypeSubmit.TabIndex = 0;
+            this.combo_QueryTypeSubmit.SelectedIndexChanged += new System.EventHandler(this.combo_QueryType_SelectedIndexChanged);
+            // 
+            // combo_QueryTextSubmit
+            // 
+            this.combo_QueryTextSubmit.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.combo_QueryTextSubmit.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.combo_QueryTextSubmit.FormattingEnabled = true;
+            this.combo_QueryTextSubmit.Location = new System.Drawing.Point(95, 25);
+            this.combo_QueryTextSubmit.Name = "combo_QueryTextSubmit";
+            this.combo_QueryTextSubmit.Size = new System.Drawing.Size(155, 21);
+            this.combo_QueryTextSubmit.Sorted = true;
+            this.combo_QueryTextSubmit.TabIndex = 1;
+            // 
+            // button_SelectQuerySubmit
+            // 
+            this.button_SelectQuerySubmit.Location = new System.Drawing.Point(256, 25);
+            this.button_SelectQuerySubmit.Name = "button_SelectQuerySubmit";
+            this.button_SelectQuerySubmit.Size = new System.Drawing.Size(68, 21);
+            this.button_SelectQuerySubmit.TabIndex = 2;
+            this.button_SelectQuerySubmit.Text = "Select";
+            this.button_SelectQuerySubmit.UseVisualStyleBackColor = true;
+            this.button_SelectQuerySubmit.Click += new System.EventHandler(this.button_SelectQuery_Click);
+            // 
+            // button_DeselectQuerySubmit
+            // 
+            this.button_DeselectQuerySubmit.Location = new System.Drawing.Point(330, 25);
+            this.button_DeselectQuerySubmit.Name = "button_DeselectQuerySubmit";
+            this.button_DeselectQuerySubmit.Size = new System.Drawing.Size(68, 21);
+            this.button_DeselectQuerySubmit.TabIndex = 3;
+            this.button_DeselectQuerySubmit.Text = "Deselect";
+            this.button_DeselectQuerySubmit.UseVisualStyleBackColor = true;
+            this.button_DeselectQuerySubmit.Click += new System.EventHandler(this.button_DeselectQuery_Click);
+            // 
+            // button_SelectNoneSubmit
+            // 
+            this.button_SelectNoneSubmit.Location = new System.Drawing.Point(6, 35);
+            this.button_SelectNoneSubmit.Name = "button_SelectNoneSubmit";
+            this.button_SelectNoneSubmit.Size = new System.Drawing.Size(95, 23);
+            this.button_SelectNoneSubmit.TabIndex = 1;
+            this.button_SelectNoneSubmit.Text = "Select None";
+            this.button_SelectNoneSubmit.UseVisualStyleBackColor = true;
+            this.button_SelectNoneSubmit.Click += new System.EventHandler(this.button_SelectNone_Click);
+            // 
+            // button_SelectAllSubmit
+            // 
+            this.button_SelectAllSubmit.Location = new System.Drawing.Point(6, 6);
+            this.button_SelectAllSubmit.Name = "button_SelectAllSubmit";
+            this.button_SelectAllSubmit.Size = new System.Drawing.Size(95, 23);
+            this.button_SelectAllSubmit.TabIndex = 0;
+            this.button_SelectAllSubmit.Text = "Select All";
+            this.button_SelectAllSubmit.UseVisualStyleBackColor = true;
+            this.button_SelectAllSubmit.Click += new System.EventHandler(this.button_SelectAll_Click);
+            // 
+            // box_SubmitTracks
+            // 
+            this.box_SubmitTracks.Controls.Add(this.button_SkipTracks);
+            this.box_SubmitTracks.Controls.Add(this.button_SubmitTracks);
+            this.box_SubmitTracks.Controls.Add(this.button_IgnoreTracks);
+            this.box_SubmitTracks.Location = new System.Drawing.Point(685, 6);
+            this.box_SubmitTracks.Name = "box_SubmitTracks";
+            this.box_SubmitTracks.Size = new System.Drawing.Size(235, 52);
+            this.box_SubmitTracks.TabIndex = 4;
+            this.box_SubmitTracks.TabStop = false;
+            this.box_SubmitTracks.Text = "Submit Tracks";
+            // 
+            // box_SubmitDate
+            // 
+            this.box_SubmitDate.Controls.Add(this.main_SubmitDate);
+            this.box_SubmitDate.Location = new System.Drawing.Point(517, 6);
+            this.box_SubmitDate.Name = "box_SubmitDate";
+            this.box_SubmitDate.Size = new System.Drawing.Size(162, 52);
+            this.box_SubmitDate.TabIndex = 3;
+            this.box_SubmitDate.TabStop = false;
+            this.box_SubmitDate.Text = "Srobble From";
             // 
             // main_SubmitDate
             // 
             this.main_SubmitDate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.main_SubmitDate.CustomFormat = "dd/MM/yyyy HH:mm:ss";
             this.main_SubmitDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.main_SubmitDate.Location = new System.Drawing.Point(502, 7);
+            this.main_SubmitDate.Location = new System.Drawing.Point(6, 24);
             this.main_SubmitDate.MinDate = new System.DateTime(2002, 1, 1, 0, 0, 0, 0);
             this.main_SubmitDate.Name = "main_SubmitDate";
-            this.main_SubmitDate.Size = new System.Drawing.Size(147, 22);
-            this.main_SubmitDate.TabIndex = 2;
+            this.main_SubmitDate.Size = new System.Drawing.Size(150, 22);
+            this.main_SubmitDate.TabIndex = 0;
             // 
-            // main_SubmitTracksButton
+            // main_SubmitContentView
             // 
-            this.main_SubmitTracksButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.main_SubmitTracksButton.Location = new System.Drawing.Point(825, 6);
-            this.main_SubmitTracksButton.Name = "main_SubmitTracksButton";
-            this.main_SubmitTracksButton.Size = new System.Drawing.Size(96, 23);
-            this.main_SubmitTracksButton.TabIndex = 0;
-            this.main_SubmitTracksButton.Text = "Scrobble Tracks";
-            this.main_SubmitTracksButton.UseVisualStyleBackColor = true;
-            this.main_SubmitTracksButton.Click += new System.EventHandler(this._cSubmitTracksButton_Click);
-            // 
-            // main_SubmitDateLabel
-            // 
-            this.main_SubmitDateLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.main_SubmitDateLabel.AutoSize = true;
-            this.main_SubmitDateLabel.Location = new System.Drawing.Point(414, 11);
-            this.main_SubmitDateLabel.Name = "main_SubmitDateLabel";
-            this.main_SubmitDateLabel.Size = new System.Drawing.Size(82, 13);
-            this.main_SubmitDateLabel.TabIndex = 1;
-            this.main_SubmitDateLabel.Text = "Scrobble from:";
+            this.main_SubmitContentView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.main_SubmitContentView.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.main_SubmitContentView.Entries = null;
+            this.main_SubmitContentView.Font = new System.Drawing.Font("Segoe UI", 8.25F);
+            this.main_SubmitContentView.Location = new System.Drawing.Point(0, 61);
+            this.main_SubmitContentView.Margin = new System.Windows.Forms.Padding(0);
+            this.main_SubmitContentView.Name = "main_SubmitContentView";
+            this.main_SubmitContentView.Size = new System.Drawing.Size(926, 372);
+            this.main_SubmitContentView.TabIndex = 5;
             // 
             // main_IgnoredTracksTab
             // 
-            this.main_IgnoredTracksTab.Controls.Add(this.main_UnignoreSelectAllButton);
-            this.main_IgnoredTracksTab.Controls.Add(this.main_UnignoreTracksButton);
+            this.main_IgnoredTracksTab.Controls.Add(this.box_FilteredSelectionIgnore);
+            this.main_IgnoredTracksTab.Controls.Add(this.button_SelectNoneIgnore);
+            this.main_IgnoredTracksTab.Controls.Add(this.button_SelectAllIgnore);
+            this.main_IgnoredTracksTab.Controls.Add(this.button_UnignoreTracks);
             this.main_IgnoredTracksTab.Controls.Add(this.main_IgnoredTracksContentView);
             this.main_IgnoredTracksTab.Location = new System.Drawing.Point(4, 22);
             this.main_IgnoredTracksTab.Name = "main_IgnoredTracksTab";
@@ -653,16 +739,110 @@ namespace ZenseMe.Client.Forms
             this.main_IgnoredTracksTab.UseVisualStyleBackColor = true;
             this.main_IgnoredTracksTab.Enter += new System.EventHandler(this._cIgnoredTracksTab_Enter);
             // 
-            // main_UnignoreTracksButton
+            // box_FilteredSelectionIgnore
             // 
-            this.main_UnignoreTracksButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.main_UnignoreTracksButton.Location = new System.Drawing.Point(816, 6);
-            this.main_UnignoreTracksButton.Name = "main_UnignoreTracksButton";
-            this.main_UnignoreTracksButton.Size = new System.Drawing.Size(105, 23);
-            this.main_UnignoreTracksButton.TabIndex = 4;
-            this.main_UnignoreTracksButton.Text = "Un-ignore Tracks";
-            this.main_UnignoreTracksButton.UseVisualStyleBackColor = true;
-            this.main_UnignoreTracksButton.Click += new System.EventHandler(this._cUnignoreTracksButton_Click);
+            this.box_FilteredSelectionIgnore.Controls.Add(this.combo_QueryTypeIgnore);
+            this.box_FilteredSelectionIgnore.Controls.Add(this.combo_QueryTextIgnore);
+            this.box_FilteredSelectionIgnore.Controls.Add(this.button_SelectQueryIgnore);
+            this.box_FilteredSelectionIgnore.Controls.Add(this.button_DeselectQueryIgnore);
+            this.box_FilteredSelectionIgnore.Location = new System.Drawing.Point(107, 6);
+            this.box_FilteredSelectionIgnore.Name = "box_FilteredSelectionIgnore";
+            this.box_FilteredSelectionIgnore.Size = new System.Drawing.Size(404, 52);
+            this.box_FilteredSelectionIgnore.TabIndex = 2;
+            this.box_FilteredSelectionIgnore.TabStop = false;
+            this.box_FilteredSelectionIgnore.Text = "Filtered Selection";
+            // 
+            // combo_QueryTypeIgnore
+            // 
+            this.combo_QueryTypeIgnore.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.combo_QueryTypeIgnore.FormattingEnabled = true;
+            this.combo_QueryTypeIgnore.Items.AddRange(new object[] {
+            "All",
+            "Artist",
+            "Album",
+            "Genre",
+            "Device"});
+            this.combo_QueryTypeIgnore.Location = new System.Drawing.Point(6, 25);
+            this.combo_QueryTypeIgnore.Name = "combo_QueryTypeIgnore";
+            this.combo_QueryTypeIgnore.Size = new System.Drawing.Size(83, 21);
+            this.combo_QueryTypeIgnore.TabIndex = 0;
+            this.combo_QueryTypeIgnore.SelectedIndexChanged += new System.EventHandler(this.combo_QueryType_SelectedIndexChanged);
+            // 
+            // combo_QueryTextIgnore
+            // 
+            this.combo_QueryTextIgnore.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.combo_QueryTextIgnore.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.combo_QueryTextIgnore.FormattingEnabled = true;
+            this.combo_QueryTextIgnore.Location = new System.Drawing.Point(95, 25);
+            this.combo_QueryTextIgnore.Name = "combo_QueryTextIgnore";
+            this.combo_QueryTextIgnore.Size = new System.Drawing.Size(155, 21);
+            this.combo_QueryTextIgnore.Sorted = true;
+            this.combo_QueryTextIgnore.TabIndex = 1;
+            // 
+            // button_SelectQueryIgnore
+            // 
+            this.button_SelectQueryIgnore.Location = new System.Drawing.Point(256, 25);
+            this.button_SelectQueryIgnore.Name = "button_SelectQueryIgnore";
+            this.button_SelectQueryIgnore.Size = new System.Drawing.Size(68, 21);
+            this.button_SelectQueryIgnore.TabIndex = 2;
+            this.button_SelectQueryIgnore.Text = "Select";
+            this.button_SelectQueryIgnore.UseVisualStyleBackColor = true;
+            this.button_SelectQueryIgnore.Click += new System.EventHandler(this.button_SelectQuery_Click);
+            // 
+            // button_DeselectQueryIgnore
+            // 
+            this.button_DeselectQueryIgnore.Location = new System.Drawing.Point(330, 25);
+            this.button_DeselectQueryIgnore.Name = "button_DeselectQueryIgnore";
+            this.button_DeselectQueryIgnore.Size = new System.Drawing.Size(68, 21);
+            this.button_DeselectQueryIgnore.TabIndex = 3;
+            this.button_DeselectQueryIgnore.Text = "Deselect";
+            this.button_DeselectQueryIgnore.UseVisualStyleBackColor = true;
+            this.button_DeselectQueryIgnore.Click += new System.EventHandler(this.button_DeselectQuery_Click);
+            // 
+            // button_SelectNoneIgnore
+            // 
+            this.button_SelectNoneIgnore.Location = new System.Drawing.Point(6, 35);
+            this.button_SelectNoneIgnore.Name = "button_SelectNoneIgnore";
+            this.button_SelectNoneIgnore.Size = new System.Drawing.Size(95, 23);
+            this.button_SelectNoneIgnore.TabIndex = 1;
+            this.button_SelectNoneIgnore.Text = "Select None";
+            this.button_SelectNoneIgnore.UseVisualStyleBackColor = true;
+            this.button_SelectNoneIgnore.Click += new System.EventHandler(this.button_SelectNone_Click);
+            // 
+            // button_SelectAllIgnore
+            // 
+            this.button_SelectAllIgnore.Location = new System.Drawing.Point(6, 6);
+            this.button_SelectAllIgnore.Name = "button_SelectAllIgnore";
+            this.button_SelectAllIgnore.Size = new System.Drawing.Size(95, 23);
+            this.button_SelectAllIgnore.TabIndex = 0;
+            this.button_SelectAllIgnore.Text = "Select All";
+            this.button_SelectAllIgnore.UseVisualStyleBackColor = true;
+            this.button_SelectAllIgnore.Click += new System.EventHandler(this.button_SelectAll_Click);
+            // 
+            // button_UnignoreTracks
+            // 
+            this.button_UnignoreTracks.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_UnignoreTracks.Location = new System.Drawing.Point(775, 29);
+            this.button_UnignoreTracks.Name = "button_UnignoreTracks";
+            this.button_UnignoreTracks.Size = new System.Drawing.Size(143, 23);
+            this.button_UnignoreTracks.TabIndex = 3;
+            this.button_UnignoreTracks.Text = "Un-ignore Tracks";
+            this.button_UnignoreTracks.UseVisualStyleBackColor = true;
+            this.button_UnignoreTracks.Click += new System.EventHandler(this.button_UnignoreTracks_Click);
+            // 
+            // main_IgnoredTracksContentView
+            // 
+            this.main_IgnoredTracksContentView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.main_IgnoredTracksContentView.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.main_IgnoredTracksContentView.Entries = null;
+            this.main_IgnoredTracksContentView.Font = new System.Drawing.Font("Segoe UI", 8.25F);
+            this.main_IgnoredTracksContentView.Location = new System.Drawing.Point(0, 61);
+            this.main_IgnoredTracksContentView.Margin = new System.Windows.Forms.Padding(0);
+            this.main_IgnoredTracksContentView.Name = "main_IgnoredTracksContentView";
+            this.main_IgnoredTracksContentView.Size = new System.Drawing.Size(926, 372);
+            this.main_IgnoredTracksContentView.TabIndex = 4;
             // 
             // main_HistoryTab
             // 
@@ -676,6 +856,16 @@ namespace ZenseMe.Client.Forms
             this.main_HistoryTab.UseVisualStyleBackColor = true;
             this.main_HistoryTab.Enter += new System.EventHandler(this._cHistoryTab_Enter);
             // 
+            // main_HistoryContentView
+            // 
+            this.main_HistoryContentView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.main_HistoryContentView.Entries = null;
+            this.main_HistoryContentView.Font = new System.Drawing.Font("Segoe UI", 8.25F);
+            this.main_HistoryContentView.Location = new System.Drawing.Point(3, 3);
+            this.main_HistoryContentView.Name = "main_HistoryContentView";
+            this.main_HistoryContentView.Size = new System.Drawing.Size(920, 428);
+            this.main_HistoryContentView.TabIndex = 0;
+            // 
             // main_AllTracksTab
             // 
             this.main_AllTracksTab.Controls.Add(this.main_AllTracksContentView);
@@ -688,57 +878,6 @@ namespace ZenseMe.Client.Forms
             this.main_AllTracksTab.UseVisualStyleBackColor = true;
             this.main_AllTracksTab.Enter += new System.EventHandler(this._cAllTracksTab_Enter);
             // 
-            // main_SelectAllButton
-            // 
-            this.main_SelectAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-            this.main_SelectAllButton.Location = new System.Drawing.Point(6, 6);
-            this.main_SelectAllButton.Name = "main_SelectAllButton";
-            this.main_SelectAllButton.Size = new System.Drawing.Size(95, 23);
-            this.main_SelectAllButton.TabIndex = 5;
-            this.main_SelectAllButton.Text = "Select All/None";
-            this.main_SelectAllButton.UseVisualStyleBackColor = true;
-            this.main_SelectAllButton.Click += new System.EventHandler(this.main_SelectAllButton_Click);
-            // 
-            // main_SubmitContentView
-            // 
-            this.main_SubmitContentView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.main_SubmitContentView.ContextMenuStrip = this.main_ContextMenu;
-            this.main_SubmitContentView.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.main_SubmitContentView.Entries = null;
-            this.main_SubmitContentView.Font = new System.Drawing.Font("Segoe UI", 8.25F);
-            this.main_SubmitContentView.Location = new System.Drawing.Point(3, 33);
-            this.main_SubmitContentView.Margin = new System.Windows.Forms.Padding(0);
-            this.main_SubmitContentView.Name = "main_SubmitContentView";
-            this.main_SubmitContentView.Size = new System.Drawing.Size(924, 400);
-            this.main_SubmitContentView.TabIndex = 0;
-            // 
-            // main_IgnoredTracksContentView
-            // 
-            this.main_IgnoredTracksContentView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.main_IgnoredTracksContentView.ContextMenuStrip = this.main_ContextMenu;
-            this.main_IgnoredTracksContentView.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.main_IgnoredTracksContentView.Entries = null;
-            this.main_IgnoredTracksContentView.Font = new System.Drawing.Font("Segoe UI", 8.25F);
-            this.main_IgnoredTracksContentView.Location = new System.Drawing.Point(3, 33);
-            this.main_IgnoredTracksContentView.Margin = new System.Windows.Forms.Padding(0);
-            this.main_IgnoredTracksContentView.Name = "main_IgnoredTracksContentView";
-            this.main_IgnoredTracksContentView.Size = new System.Drawing.Size(924, 400);
-            this.main_IgnoredTracksContentView.TabIndex = 0;
-            // 
-            // main_HistoryContentView
-            // 
-            this.main_HistoryContentView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.main_HistoryContentView.Entries = null;
-            this.main_HistoryContentView.Font = new System.Drawing.Font("Segoe UI", 8.25F);
-            this.main_HistoryContentView.Location = new System.Drawing.Point(3, 3);
-            this.main_HistoryContentView.Name = "main_HistoryContentView";
-            this.main_HistoryContentView.Size = new System.Drawing.Size(920, 428);
-            this.main_HistoryContentView.TabIndex = 0;
-            // 
             // main_AllTracksContentView
             // 
             this.main_AllTracksContentView.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -749,16 +888,29 @@ namespace ZenseMe.Client.Forms
             this.main_AllTracksContentView.Size = new System.Drawing.Size(920, 428);
             this.main_AllTracksContentView.TabIndex = 0;
             // 
-            // main_UnignoreSelectAllButton
+            // contentViewBindingSource
             // 
-            this.main_UnignoreSelectAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
-            this.main_UnignoreSelectAllButton.Location = new System.Drawing.Point(6, 6);
-            this.main_UnignoreSelectAllButton.Name = "main_UnignoreSelectAllButton";
-            this.main_UnignoreSelectAllButton.Size = new System.Drawing.Size(95, 23);
-            this.main_UnignoreSelectAllButton.TabIndex = 5;
-            this.main_UnignoreSelectAllButton.Text = "Select All/None";
-            this.main_UnignoreSelectAllButton.UseVisualStyleBackColor = true;
-            this.main_UnignoreSelectAllButton.Click += new System.EventHandler(this.main_UnignoreSelectAllButton_Click);
+            this.contentViewBindingSource.DataSource = typeof(ZenseMe.Client.Forms.ContentView);
+            // 
+            // button_LinkLastFM
+            // 
+            this.button_LinkLastFM.Location = new System.Drawing.Point(9, 58);
+            this.button_LinkLastFM.Name = "button_LinkLastFM";
+            this.button_LinkLastFM.Size = new System.Drawing.Size(134, 29);
+            this.button_LinkLastFM.TabIndex = 8;
+            this.button_LinkLastFM.Text = "Link with profile";
+            this.button_LinkLastFM.UseVisualStyleBackColor = true;
+            this.button_LinkLastFM.Click += new System.EventHandler(this.button_LinkLastFM_Click);
+            // 
+            // button_DetachLastFM
+            // 
+            this.button_DetachLastFM.Location = new System.Drawing.Point(9, 93);
+            this.button_DetachLastFM.Name = "button_DetachLastFM";
+            this.button_DetachLastFM.Size = new System.Drawing.Size(134, 29);
+            this.button_DetachLastFM.TabIndex = 9;
+            this.button_DetachLastFM.Text = "Detach from profile";
+            this.button_DetachLastFM.UseVisualStyleBackColor = true;
+            this.button_DetachLastFM.Click += new System.EventHandler(this.button_DetachLastFM_Click);
             // 
             // Main
             // 
@@ -772,9 +924,7 @@ namespace ZenseMe.Client.Forms
             this.MinimumSize = new System.Drawing.Size(950, 520);
             this.Name = "Main";
             this.Text = "ZenseMe";
-            this.main_ContextMenu.ResumeLayout(false);
             this.main_ToolStripContainer.BottomToolStripPanel.ResumeLayout(false);
-            this.main_ToolStripContainer.BottomToolStripPanel.PerformLayout();
             this.main_ToolStripContainer.ContentPanel.ResumeLayout(false);
             this.main_ToolStripContainer.ResumeLayout(false);
             this.main_ToolStripContainer.PerformLayout();
@@ -790,22 +940,19 @@ namespace ZenseMe.Client.Forms
             this.main_DeviceBox.ResumeLayout(false);
             this.main_DeviceBox.PerformLayout();
             this.main_RecentlyPlayedTab.ResumeLayout(false);
-            this.main_RecentlyPlayedTab.PerformLayout();
+            this.box_FilteredSelectionSubmit.ResumeLayout(false);
+            this.box_SubmitTracks.ResumeLayout(false);
+            this.box_SubmitDate.ResumeLayout(false);
             this.main_IgnoredTracksTab.ResumeLayout(false);
+            this.box_FilteredSelectionIgnore.ResumeLayout(false);
             this.main_HistoryTab.ResumeLayout(false);
             this.main_AllTracksTab.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.contentViewBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.ContextMenuStrip main_ContextMenu;
-        private System.Windows.Forms.ToolStripMenuItem main_ContextMenuSelectAll;
-        private System.Windows.Forms.ToolStripSeparator main_ContextMenuSplitter;
-        private System.Windows.Forms.ToolStripMenuItem main_ContextMenuSelectArtist;
-        private System.Windows.Forms.ToolStripMenuItem main_ContextMenuSelectAlbum;
-        private System.Windows.Forms.ToolStripMenuItem main_ContextMenuSelectDevice;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem websiteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tipsToolStripMenuItem;
@@ -826,13 +973,11 @@ namespace ZenseMe.Client.Forms
         private System.Windows.Forms.TabControl main_TabControl;
         private System.Windows.Forms.TabPage main_HomeTab;
         private System.Windows.Forms.TabPage main_RecentlyPlayedTab;
-        private System.Windows.Forms.Button main_SkipTracksButton;
-        private System.Windows.Forms.Button main_IgnoreTracksButton;
+        private System.Windows.Forms.Button button_SkipTracks;
         private System.Windows.Forms.DateTimePicker main_SubmitDate;
-        private System.Windows.Forms.Button main_SubmitTracksButton;
-        private System.Windows.Forms.Label main_SubmitDateLabel;
+        private System.Windows.Forms.Button button_SubmitTracks;
         private System.Windows.Forms.TabPage main_IgnoredTracksTab;
-        private System.Windows.Forms.Button main_UnignoreTracksButton;
+        private System.Windows.Forms.Button button_UnignoreTracks;
         private System.Windows.Forms.TabPage main_HistoryTab;
         private System.Windows.Forms.TabPage main_AllTracksTab;
         private System.Windows.Forms.ToolStripContainer main_ToolStripContainer;
@@ -858,7 +1003,26 @@ namespace ZenseMe.Client.Forms
         private System.Windows.Forms.Label lbl_DevModel;
         private System.Windows.Forms.Label lbl_DevManufacturer;
         private System.Windows.Forms.Label lbl_DevName;
-        private System.Windows.Forms.Button main_SelectAllButton;
-        private System.Windows.Forms.Button main_UnignoreSelectAllButton;
+        private System.Windows.Forms.GroupBox box_SubmitTracks;
+        private System.Windows.Forms.Button button_IgnoreTracks;
+        private System.Windows.Forms.ToolTip tooltip_SubmitTracks;
+        private System.Windows.Forms.ComboBox combo_QueryTextSubmit;
+        private System.Windows.Forms.GroupBox box_SubmitDate;
+        private System.Windows.Forms.GroupBox box_FilteredSelectionSubmit;
+        private System.Windows.Forms.Button button_SelectNoneSubmit;
+        private System.Windows.Forms.Button button_SelectAllSubmit;
+        private System.Windows.Forms.Button button_DeselectQuerySubmit;
+        private System.Windows.Forms.Button button_SelectQuerySubmit;
+        private System.Windows.Forms.ComboBox combo_QueryTypeSubmit;
+        private System.Windows.Forms.GroupBox box_FilteredSelectionIgnore;
+        private System.Windows.Forms.ComboBox combo_QueryTypeIgnore;
+        private System.Windows.Forms.ComboBox combo_QueryTextIgnore;
+        private System.Windows.Forms.Button button_SelectQueryIgnore;
+        private System.Windows.Forms.Button button_DeselectQueryIgnore;
+        private System.Windows.Forms.Button button_SelectNoneIgnore;
+        private System.Windows.Forms.Button button_SelectAllIgnore;
+        private System.Windows.Forms.BindingSource contentViewBindingSource;
+        private System.Windows.Forms.Button button_DetachLastFM;
+        private System.Windows.Forms.Button button_LinkLastFM;
     }
 }

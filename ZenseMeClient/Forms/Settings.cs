@@ -18,12 +18,11 @@ namespace ZenseMe.Client.Forms
 
         private void Settings_Load(object sender, EventArgs e)
         {
-            lbl_version.Text = "By Arnold Vink\nv" + Application.ProductVersion;
+            lbl_version.Text = Application.ProductVersion;
             string Scrobble_BetweenTime = ConfigurationManager.AppSettings["Scrobble_BetweenTime"];
             string FetchAlbumArtist = ConfigurationManager.AppSettings["FetchAlbumArtist"];
             string FixUtcNowTime = ConfigurationManager.AppSettings["FixUtcNowTime"];
             string HttpsConnection = ConfigurationManager.AppSettings["HttpsConnection"];
-            string version = Application.ProductVersion;
 
             txt_Scrobble_BetweenTime.Text = Scrobble_BetweenTime;
             cb_FetchAlbumArtist.Checked = FetchAlbumArtist == "1";
@@ -66,19 +65,6 @@ namespace ZenseMe.Client.Forms
 
             _Frontend.InitializeTabs();
             _Frontend.ToolBarStatusText = "Ready, your settings have been saved.";
-        }
-
-        private string CalculateMD5(string input)
-        {
-            MD5 md = MD5.Create();
-            byte[] buffer = new UTF8Encoding().GetBytes(input);
-            byte[] hash = md.ComputeHash(buffer);
-            string md5 = string.Empty;
-            for (int i = 0; i < hash.Length; i++)
-            {
-                md5 = md5 + hash[i].ToString("x2");
-            }
-            return md5;
         }
     }
 }

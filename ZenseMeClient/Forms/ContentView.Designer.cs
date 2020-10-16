@@ -32,6 +32,7 @@ namespace ZenseMe.Client.Forms
             this.content_Track = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.content_Artist = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.content_Album = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.content_Genre = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.content_Duration = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.content_PlayCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.content_Device = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -45,6 +46,7 @@ namespace ZenseMe.Client.Forms
             this.content_Track,
             this.content_Artist,
             this.content_Album,
+            this.content_Genre,
             this.content_Duration,
             this.content_PlayCount,
             this.content_Device});
@@ -52,6 +54,7 @@ namespace ZenseMe.Client.Forms
             this._cTrackContentView.FullRowSelect = true;
             this._cTrackContentView.GridLines = true;
             this._cTrackContentView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this._cTrackContentView.HideSelection = false;
             this._cTrackContentView.Location = new System.Drawing.Point(0, 0);
             this._cTrackContentView.Name = "_cTrackContentView";
             this._cTrackContentView.Size = new System.Drawing.Size(804, 402);
@@ -62,17 +65,22 @@ namespace ZenseMe.Client.Forms
             // content_Track
             // 
             this.content_Track.Text = "Track";
-            this.content_Track.Width = 240;
+            this.content_Track.Width = 200;
             // 
             // content_Artist
             // 
             this.content_Artist.Text = "Artist";
-            this.content_Artist.Width = 170;
+            this.content_Artist.Width = 154;
             // 
             // content_Album
             // 
             this.content_Album.Text = "Album";
-            this.content_Album.Width = 205;
+            this.content_Album.Width = 175;
+            // 
+            // content_Genre
+            // 
+            this.content_Genre.Text = "Genre";
+            this.content_Genre.Width = 95;
             // 
             // content_Duration
             // 
@@ -82,12 +90,12 @@ namespace ZenseMe.Client.Forms
             // content_PlayCount
             // 
             this.content_PlayCount.Text = "Play/Scrob";
-            this.content_PlayCount.Width = 72;
+            this.content_PlayCount.Width = 79;
             // 
             // content_Device
             // 
             this.content_Device.Text = "Device";
-            this.content_Device.Width = 135;
+            this.content_Device.Width = 129;
             // 
             // ContentView
             // 
@@ -110,5 +118,6 @@ namespace ZenseMe.Client.Forms
 		private System.Windows.Forms.ColumnHeader content_Duration;
 		private System.Windows.Forms.ColumnHeader content_PlayCount;
         private System.Windows.Forms.ColumnHeader content_Device;
-	}
+        private System.Windows.Forms.ColumnHeader content_Genre;
+    }
 }

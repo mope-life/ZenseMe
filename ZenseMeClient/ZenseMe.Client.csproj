@@ -92,6 +92,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Authenticator.cs" />
     <Compile Include="Forms\Login.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -160,6 +161,7 @@
     <None Include="Properties\app.manifest">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Properties\DataSources\ZenseMe.Client.Forms.ContentView.datasource" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ZuseMe.ico" />

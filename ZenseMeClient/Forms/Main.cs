@@ -14,10 +14,13 @@ namespace ZenseMe.Client.Forms
         private Device Device;
         private List<Device> DeviceList;
         private EntryObjectDAO EntryObjectDAO;
+        private TrackSelector submitTabSelector = null;
+        private TrackSelector ignoreTabSelector = null;
 
         public Main()
         {
             InitializeComponent();
+            EntryObjectDAO = new EntryObjectDAO();
         }
 
         public string ToolBarStatusText
@@ -59,7 +62,6 @@ namespace ZenseMe.Client.Forms
         public void InitializeSummaryTab()
         {
             // Information
-            EntryObjectDAO = new EntryObjectDAO();
             try
             {
                 int TotalTracksStored = EntryObjectDAO.FetchAll() != null ? EntryObjectDAO.FetchAll().Count : 0;
@@ -128,11 +130,9 @@ namespace ZenseMe.Client.Forms
 
         public void InitializeAllTracksTab()
         {
-            EntryObjectDAO entryDAO = new EntryObjectDAO();
-
             try
             {
-                main_AllTracksContentView.BindData(entryDAO.FetchAll(), false);
+                main_AllTracksContentView.BindData(EntryObjectDAO.FetchAll(), false);
             }
             catch (Exception ex)
             {
@@ -142,25 +142,38 @@ namespace ZenseMe.Client.Forms
 
         public void InitializeIgnoredTracksTab()
         {
-            EntryObjectDAO entryDAO = new EntryObjectDAO();
-
             try
             {
-                main_IgnoredTracksContentView.BindData(entryDAO.FetchIgnored(), true);
+                main_IgnoredTracksContentView.BindData(EntryObjectDAO.FetchIgnored(), true);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Initialize error: " + ex);
             }
+
+            if (ignoreTabSelector == null)
+            {
+                ignoreTabSelector = new TrackSelector(
+                    this, main_IgnoredTracksContentView,
+                    new List<Control> {
+                        combo_QueryTypeIgnore,
+                        combo_QueryTextIgnore,
+                        button_SelectAllIgnore,
+                        button_SelectNoneIgnore,
+                        button_SelectQueryIgnore,
+                        button_DeselectQueryIgnore
+                    }
+                );
+            }
+
+            combo_QueryTypeIgnore.SelectedIndex = 0;
         }
 
         public void InitializeHistoryTracksTab()
         {
-            EntryObjectDAO entryDAO = new EntryObjectDAO();
-
             try
             {
-                main_HistoryContentView.BindData(entryDAO.FetchSubmitted(), false);
+                main_HistoryContentView.BindData(EntryObjectDAO.FetchSubmitted(), false);
             }
             catch (Exception ex)
             {
@@ -174,21 +187,37 @@ namespace ZenseMe.Client.Forms
             {
                 main_SubmitDate.Value = DateTime.UtcNow;
             }
-            EntryObjectDAO entryDAO = new EntryObjectDAO();
 
             try
             {
-                main_SubmitContentView.BindData(entryDAO.FetchNotSubmitted(), true);
+                main_SubmitContentView.BindData(EntryObjectDAO.FetchNotSubmitted(), true);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Initialize error: " + ex);
             }
+
+            if (submitTabSelector == null)
+            {
+                submitTabSelector = new TrackSelector(
+                    this, main_SubmitContentView,
+                    new List<Control>
+                    {
+                        combo_QueryTypeSubmit,
+                        combo_QueryTextSubmit,
+                        button_SelectAllSubmit,
+                        button_SelectNoneSubmit,
+                        button_SelectQuerySubmit,
+                        button_DeselectQuerySubmit
+                    }
+                );
+            }
+
+            combo_QueryTypeSubmit.SelectedIndex = 0;
         }
 
         public void ScanDeviceForContent()
         {
-            EntryObjectDAO = new EntryObjectDAO();
             GetDevice();
 
             EntryManager EntryManager = new EntryManager(Device);
@@ -229,17 +258,8 @@ namespace ZenseMe.Client.Forms
             InitializeHistoryTracksTab();
         }
 
-        private void _cSubmitTracksButton_Click(object sender, EventArgs e)
+        private void button_SubmitTracks_Click(object sender, EventArgs e)
         {
-            if (ConfigurationManager.AppSettings["LastFM_Username"] == "" || ConfigurationManager.AppSettings["LastFM_Password"] == "")
-            {
-                MessageBox.Show("Please set your username and password in the settings menu.", "ZenseMe");
-
-                Forms.Settings SettingsForm = new Forms.Settings(this);
-                SettingsForm.Show();
-
-                return;
-            }
             if (main_SubmitContentView.CheckedItems.Count > 0)
             {
                 ConfirmScrobble ConfirmScrobble = new ConfirmScrobble(this);
@@ -256,7 +276,7 @@ namespace ZenseMe.Client.Forms
             }
         }
 
-        private void _cSkipTracksButton_Click(object sender, EventArgs e)
+        private void button_SkipTracks_Click(object sender, EventArgs e)
         {
             if (main_SubmitContentView.CheckedItems.Count == 0)
             {
@@ -285,7 +305,7 @@ namespace ZenseMe.Client.Forms
             }
         }
 
-        private void _cIgnoreTracksButton_Click(object sender, EventArgs e)
+        private void button_IgnoreTracks_Click(object sender, EventArgs e)
         {
             ToolBarStatusText = "Now ignoring tracks...";
             if (main_SubmitContentView.CheckedItems.Count > 0)
@@ -304,7 +324,7 @@ namespace ZenseMe.Client.Forms
             }
         }
 
-        private void _cUnignoreTracksButton_Click(object sender, EventArgs e)
+        private void button_UnignoreTracks_Click(object sender, EventArgs e)
         {
             ToolBarStatusText = "Now un-ignoring tracks...";
             if (main_IgnoredTracksContentView.CheckedItems.Count > 0)
@@ -321,42 +341,6 @@ namespace ZenseMe.Client.Forms
                 MessageBox.Show("You need to select a track to un-ignore first.", "ZenseMe");
                 return;
             }
-        }
-
-        private void main_SelectAllButton_Click(object sender, EventArgs e)
-        {
-            main_SubmitContentView.SelectAll();
-            main_IgnoredTracksContentView.SelectAll();
-        }
-
-        private void main_UnignoreSelectAllButton_Click(object sender, EventArgs e)
-        {
-            main_SubmitContentView.SelectAll();
-            main_IgnoredTracksContentView.SelectAll();
-        }
-
-        private void _cSubmitSelectAllContextItem_Click(object sender, EventArgs e)
-        {
-            main_SubmitContentView.SelectAll();
-            main_IgnoredTracksContentView.SelectAll();
-        }
-
-        private void _cSubmitSelectArtistContextItem_Click(object sender, EventArgs e)
-        {
-            main_SubmitContentView.SelectAllForArtist();
-            main_IgnoredTracksContentView.SelectAllForArtist();
-        }
-
-        private void _cSubmitSelectAlbumContextItem_Click(object sender, EventArgs e)
-        {
-            main_SubmitContentView.SelectAllForAlbum();
-            main_IgnoredTracksContentView.SelectAllForAlbum();
-        }
-
-        private void _cSubmitSelectDeviceContextItem_Click(object sender, EventArgs e)
-        {
-            main_SubmitContentView.SelectAllForDevice();
-            main_IgnoredTracksContentView.SelectAllForDevice();
         }
 
         public void InitializeTabs()
@@ -392,17 +376,14 @@ namespace ZenseMe.Client.Forms
 
         private void ll_profile_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
+            Authenticator authenticator = new Authenticator();
+            authenticator.Authenticate();
+
             string setProfileName = ConfigurationManager.AppSettings["LastFM_Username"];
-            if (ConfigurationManager.AppSettings["LastFM_Username"] == "" || ConfigurationManager.AppSettings["LastFM_Password"] == "")
+            if (setProfileName != "")
             {
-                MessageBox.Show("Please set your username and password in the settings menu.", "ZenseMe");
-
-                Forms.Settings SettingsForm = new Forms.Settings(this);
-                SettingsForm.Show();
-
-                return;
+                Process.Start("http://last.fm/user/" + setProfileName);
             }
-            System.Diagnostics.Process.Start("http://last.fm/user/" + setProfileName);
         }
 
         private void ll_fetch_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -442,6 +423,125 @@ namespace ZenseMe.Client.Forms
             Console.WriteLine("Starting to fetch songs, this can take a short while.");
             ScanDeviceForContent();
             InitializeTabs();
+        }
+
+        /**
+         * Refresh the status strip when the text changes. Causes the status bar
+         * to properly display progress while getting playcounts from device.
+         */
+        private void main_StatusText_TextChanged(object sender, EventArgs e)
+        {
+            main_StatusStrip.Refresh();
+        }
+
+        private class TrackSelector
+        {
+            private ComboBox _comboQueryType;
+            private ComboBox _comboQueryText;
+            private ContentView _contentView;
+            private Main _main;
+
+            public TrackSelector(Main caller, ContentView contentView, List<Control> controls)
+            {
+                _main = caller;
+                _contentView = contentView;
+                _comboQueryType = (ComboBox)controls[0];
+                _comboQueryText = (ComboBox)controls[1];
+
+                foreach (Control ctrl in controls)
+                {
+                    ctrl.Tag = this;
+                }
+            }
+
+            public void SelectQuery(bool onOrOff = true)
+            {
+                string queryType = _comboQueryType.SelectedItem as string;
+                string queryText = _comboQueryText.SelectedItem as string;
+
+                _contentView.SelectGroup(queryType, queryText, onOrOff);
+            }
+
+            public void DeselectQuery()
+            {
+                SelectQuery(false);
+            }
+
+            public void SelectAll()
+            {
+                _contentView.SelectAll();
+            }
+
+            public void DeselectAll()
+            {
+                _contentView.DeselectAll();
+            }
+
+            public void PopulateOptions()
+            {
+                string queryType = _comboQueryType.SelectedItem as string;
+
+                _comboQueryText.Items.Clear();
+                _comboQueryText.SelectedIndex = -1;
+                _comboQueryText.Text = "";
+
+                if (queryType != "All")
+                {
+                    List<string> uniqueValues = _main.EntryObjectDAO.FetchUnique(queryType);
+                    _comboQueryText.Items.AddRange(uniqueValues.ToArray());
+                }
+            }
+        }
+
+        private void combo_QueryType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            TrackSelector selector = ((ComboBox)sender).Tag as TrackSelector;
+            selector.PopulateOptions();
+        }
+
+        private void button_SelectAll_Click(object sender, EventArgs e)
+        {
+            TrackSelector selector = ((Button)sender).Tag as TrackSelector;
+            selector.SelectAll();
+        }
+
+        private void button_SelectNone_Click(object sender, EventArgs e)
+        {
+            TrackSelector selector = ((Button)sender).Tag as TrackSelector;
+            selector.DeselectAll();
+        }
+
+        private void button_SelectQuery_Click(object sender, EventArgs e)
+        {
+            TrackSelector selector = ((Button)sender).Tag as TrackSelector;
+            selector.SelectQuery();
+        }
+
+        private void button_DeselectQuery_Click(object sender, EventArgs e)
+        {
+            TrackSelector selector = ((Button)sender).Tag as TrackSelector;
+            selector.DeselectQuery();
+        }
+
+        private void button_LinkLastFM_Click(object sender, EventArgs e)
+        {
+            Authenticator authenticator = new Authenticator();
+            if (authenticator.Authenticate())
+            {
+                lbl_FMUsername.Text =
+                    "Username: " + ConfigurationManager.AppSettings["LastFM_Username"];
+            }
+        }
+
+        private void button_DetachLastFM_Click(object sender, EventArgs e)
+        {
+            Configuration Configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            Configuration.AppSettings.Settings["LastFM_SessionKey"].Value = "";
+            Configuration.AppSettings.Settings["LastFM_Username"].Value = "";
+            Configuration.Save(ConfigurationSaveMode.Modified);
+            ConfigurationManager.RefreshSection("appSettings");
+
+            lbl_FMUsername.Text = "Username: None";
         }
     }
 }

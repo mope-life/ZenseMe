@@ -46,7 +46,7 @@ namespace ZenseMe.Lib.Storage
         {
             if (SQLiteConnection.GetSchema("Tables").Rows.Count == 0)
             {
-                Execute("CREATE TABLE device_tracks ([id] NVARCHAR(30), [persistent_id] NVARCHAR(30) PRIMARY KEY, [filename] TEXT, [name] NVARCHAR(256), [artist] NVARCHAR(256), [album] NVARCHAR(256), [length] INTEGER, [play_count] INTEGER, [play_count_his] INTEGER DEFAULT '0', [date_submitted] NVARCHAR(20) DEFAULT '0', [ignored] INTEGER DEFAULT '0', [device] NVARCHAR(30))");
+                Execute("CREATE TABLE device_tracks ([id] NVARCHAR(30), [persistent_id] NVARCHAR(30) PRIMARY KEY, [filename] TEXT, [name] NVARCHAR(256), [artist] NVARCHAR(256), [album] NVARCHAR(256), [genre] NVARCHAR(256), [length] INTEGER, [play_count] INTEGER, [play_count_his] INTEGER DEFAULT '0', [date_submitted] NVARCHAR(20) DEFAULT '0', [ignored] INTEGER DEFAULT '0', [device] NVARCHAR(30))");
             }
         }
 

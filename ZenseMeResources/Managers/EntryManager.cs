@@ -130,6 +130,15 @@ namespace ZenseMe.Lib.Managers
                     entry.Album = "Unknown Album";
                 }
 
+                if (properties[PropertyNames.OBJECT_GENRE] != null)
+                {
+                    entry.Genre = (string)properties[PropertyNames.OBJECT_GENRE];
+                }
+                else
+                {
+                    entry.Genre = "Unknown Genre";
+                }
+
                 if (properties[PropertyNames.OBJECT_FILENAME] != null)
                 {
                     entry.Filename = (string)properties[PropertyNames.OBJECT_FILENAME];

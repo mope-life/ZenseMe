@@ -22,6 +22,7 @@ namespace ZenseMe.Lib.Managers
                 playedTrack.Name = entry.Name;
                 playedTrack.Artist = entry.Artist;
                 playedTrack.Album = entry.Album;
+                playedTrack.Genre = entry.Genre;
                 playedTrack.Length = entry.Length;
                 playedTrack.Device = entry.Device;
                 playedTrack.PlayCount = entry.PlayCount;

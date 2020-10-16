@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using ZenseMe.Lib.Objects;
@@ -7,7 +8,6 @@ namespace ZenseMe.Client.Forms
     public partial class ContentView : UserControl
     {
         private List<EntryObject> ConfirmScrobbleList;
-        private bool _bAllSelected = false;
 
         public List<EntryObject> Entries
         {
@@ -47,8 +47,8 @@ namespace ZenseMe.Client.Forms
         {
             InitializeComponent();
             ConfirmScrobbleList = new List<EntryObject>();
-        }
-
+        }   
+        
         public void BindData(List<EntryObject> entries, bool withCheckboxes)
         {
             ConfirmScrobbleList = entries;
@@ -68,6 +68,7 @@ namespace ZenseMe.Client.Forms
                         entry.Name,
                         entry.Artist,
                         entry.Album,
+                        entry.Genre,
                         entry.LengthSeconds + " sec",
                         entry.PlayCount + "/" + entry.PlayCountHis,
                         entry.Device
@@ -81,89 +82,39 @@ namespace ZenseMe.Client.Forms
             }
         }
 
-        public void SelectAll()
+        public void SelectAll(bool onOrOff = true)
         {
             foreach (ListViewItem listItem in _cTrackContentView.Items)
             {
-                listItem.Checked = !_bAllSelected;
+                listItem.Checked = onOrOff;
             }
-            _bAllSelected = !_bAllSelected;
         }
 
-        public void SelectAllForArtist()
+        public void DeselectAll()
         {
-            List<string> alreadySelected = new List<string>();
+            SelectAll(false);
+        }
+        
+        public void SelectGroup(string queryType, string queryText, bool onOrOff)
+        {
+            Func<ListViewItem, bool> queryFieldProc;
 
-            foreach (EntryObject entry in SelectedItems)
+            switch (queryType)
             {
-                if (!alreadySelected.Contains(entry.Artist))
-                {
-                    SelectAllForArtist(entry.Artist);
-                    alreadySelected.Add(entry.Artist);
-                }
-            }
-        }
+                case "Artist": queryFieldProc = item => ((EntryObject)item.Tag).Artist == queryText; break;
+                case "Album": queryFieldProc = item => ((EntryObject)item.Tag).Album == queryText; break;
+                case "Genre": queryFieldProc = item => ((EntryObject)item.Tag).Genre == queryText; break;
+                case "Device": queryFieldProc = item => ((EntryObject)item.Tag).Device == queryText; break;
+                default: queryFieldProc = item => true; break;
+            };
 
-        public void SelectAllForArtist(string artist)
-        {
             foreach (ListViewItem item in _cTrackContentView.Items)
             {
-                if (((EntryObject)item.Tag).Artist == artist)
+                if (queryFieldProc(item))
                 {
-                    item.Checked = true;
+                    item.Checked = onOrOff;
                 }
             }
         }
-
-        public void SelectAllForAlbum()
-        {
-            List<string> alreadySelected = new List<string>();
-
-            foreach (EntryObject entry in SelectedItems)
-            {
-                if (!alreadySelected.Contains(entry.Album))
-                {
-                    SelectAllForAlbum(entry.Album);
-                    alreadySelected.Add(entry.Album);
-                }
-            }
-        }
-
-        public void SelectAllForAlbum(string album)
-        {
-            foreach (ListViewItem item in _cTrackContentView.Items)
-            {
-                if (((EntryObject)item.Tag).Album == album)
-                {
-                    item.Checked = true;
-                }
-            }
-        }
-
-        public void SelectAllForDevice()
-        {
-            List<string> alreadySelected = new List<string>();
-
-            foreach (EntryObject entry in SelectedItems)
-            {
-                if (!alreadySelected.Contains(entry.Device))
-                {
-                    SelectAllForDevice(entry.Device);
-                    alreadySelected.Add(entry.Device);
-                }
-            }
-        }
-
-        public void SelectAllForDevice(string device)
-        {
-            foreach (ListViewItem item in _cTrackContentView.Items)
-            {
-                if (((EntryObject)item.Tag).Device == device)
-                {
-                    item.Checked = true;
-                }
-            }
-        }
-
     }
 }
