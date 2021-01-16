@@ -8,5 +8,5 @@
 [assembly: AssemblyCopyright("Copyright © Arnold Vink")]
 
 // Version information for an assembly consists of the following four values:
-[assembly: AssemblyVersion("2.0.1")]
-[assembly: AssemblyFileVersion("2.0.1")]
+[assembly: AssemblyVersion("2.0.2")]
+[assembly: AssemblyFileVersion("2.0.2")]

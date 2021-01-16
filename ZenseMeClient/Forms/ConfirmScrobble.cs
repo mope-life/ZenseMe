@@ -59,7 +59,8 @@ namespace ZenseMe.Client.Forms
                     return;
                 }
 
-                Audioscrobbler audioscrobbler = new Audioscrobbler();
+                ApiManager apiManager = new ApiManager();
+                PlayedTrackDAO PlayedTrackDAO = new PlayedTrackDAO();
 
                 //Sort the too scrobble songs
                 ConfirmScrobbleList = ConfirmScrobbleList.OrderBy(x => x.DateSubmitted).ToList();
@@ -84,7 +85,7 @@ namespace ZenseMe.Client.Forms
                         Console.WriteLine("Scrobbling: " + track.Artist + " - " + track.Name);
                         track.DateSubmitted = track.DateSubmitted.AddSeconds(Convert.ToInt32(ConfigurationManager.AppSettings["Scrobble_BetweenTime"]));
 
-                        if (!audioscrobbler.SubmitTrack(track.Artist, track.Name, track.Album, track.LengthSeconds, track.DateSubmitted))
+                        if (!apiManager.SubmitTrack(track.Artist, track.Name, track.Album, track.LengthSeconds, track.DateSubmitted))
                         {
                             Close();
                             return;
@@ -92,7 +93,6 @@ namespace ZenseMe.Client.Forms
                     }
 
                     Console.WriteLine("Track added to scrobble history.");
-                    PlayedTrackDAO PlayedTrackDAO = new PlayedTrackDAO();
                     PlayedTrackDAO.SaveObject(track.PersistentId, track.DateSubmitted, track.PlayCount);
                 }
 

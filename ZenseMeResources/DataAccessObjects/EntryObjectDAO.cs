@@ -7,9 +7,24 @@ using ZenseMe.Lib.Storage;
 
 namespace ZenseMe.Lib.DataAccessObjects
 {
+    public class TrackStatus
+    {
+        private TrackStatus(string query)
+        {
+            Query = query;
+        }
+        public string Query{ get; }
+        public static TrackStatus Submitted { get {return new TrackStatus("WHERE play_count_his > 0"); } }
+        public static TrackStatus NotSubmitted { get {return new TrackStatus("WHERE play_count > play_count_his AND ignored == 0"); } }
+        public static TrackStatus Ignored { get {return new TrackStatus("WHERE ignored > 0"); } }
+        public static TrackStatus Played { get { return new TrackStatus("WHERE play_count > 0"); } }
+    }
+
     public class EntryObjectDAO
     {
         private Database _hDatabase;
+
+        private Dictionary<string, HashSet<string>> AutoIgnoreRules;
 
         public EntryObjectDAO()
         {
@@ -18,22 +33,22 @@ namespace ZenseMe.Lib.DataAccessObjects
 
         public List<EntryObject> FetchSubmitted()
         {
-            return FetchAll("WHERE play_count_his > 0");
+            return FetchAll(TrackStatus.Submitted.Query);
         }
 
         public List<EntryObject> FetchNotSubmitted()
         {
-            return FetchAll("WHERE play_count > play_count_his AND ignored == 0");
+            return FetchAll(TrackStatus.NotSubmitted.Query);
         }
 
         public List<EntryObject> FetchIgnored()
         {
-            return FetchAll("WHERE ignored > 0");
+            return FetchAll(TrackStatus.Ignored.Query);
         }
 
         public List<EntryObject> FetchPlayed()
         {
-            return FetchAll("WHERE play_count > 0");
+            return FetchAll(TrackStatus.Played.Query);
         }
 
         public List<EntryObject> FetchAll()
@@ -73,15 +88,20 @@ namespace ZenseMe.Lib.DataAccessObjects
             }
         }
 
-        public List<string> FetchUnique(string field)
+        public List<string> FetchUnique(string field, TrackStatus trackStatus)
         {
             field = field.ToLower();
 
-            DataSet dataSet = _hDatabase.Fetch("SELECT DISTINCT " + field + " FROM device_tracks");
+            DataSet dataSet = _hDatabase.Fetch("SELECT DISTINCT " + field + " FROM device_tracks " + trackStatus.Query);
+
             List<string> uniqueValues = new List<string>();
-            foreach (DataRow row in dataSet.Tables[0].Rows)
+
+            if (dataSet.Tables.Count > 0)
             {
-                uniqueValues.Add(row[field] as string);
+                foreach (DataRow row in dataSet.Tables[0].Rows)
+                {
+                    uniqueValues.Add(row[field] as string);
+                }
             }
 
             return uniqueValues;
@@ -113,9 +133,33 @@ namespace ZenseMe.Lib.DataAccessObjects
             return true;
         }
 
+        public void BuildAutoIgnoreRules()
+        {
+            AutoIgnoreRules = new Dictionary<string, HashSet<string>>
+            {
+                ["Artist"] = new HashSet<string>(),
+                ["Album"] = new HashSet<string>(),
+                ["Genre"] = new HashSet<string>()
+            };
+
+            DataSet rules = _hDatabase.Fetch("SELECT field, value FROM auto_ignore_rules");
+
+            foreach (DataRow dataRow in rules.Tables[0].Rows)
+            {
+                AutoIgnoreRules[(string)dataRow["field"]].Add((string)dataRow["value"]);
+            }
+        }
+
         public uint CheckHis = 0;
         public void SaveObject(EntryObject entryObject)
         {
+            // Check if the track should be ignored by AutoIgnore rules
+            bool ignored =
+                AutoIgnoreRules["Artist"].Contains(entryObject.Artist) ||
+                AutoIgnoreRules["Album"].Contains(entryObject.Album) ||
+                AutoIgnoreRules["Genre"].Contains(entryObject.Genre);
+
+
             if (!ObjectExists(entryObject.PersistentId))
             {
                 string sqlQuery = "INSERT INTO device_tracks ("
@@ -128,7 +172,8 @@ namespace ZenseMe.Lib.DataAccessObjects
                         + "[length], "
                         + "[device], "
                         + "[play_count], "
-                        + "[filename] "
+                        + "[filename], "
+                        + "[ignored] "
                         + ") VALUES ("
                         + "@id, "
                         + "@persistentId, "
@@ -139,7 +184,8 @@ namespace ZenseMe.Lib.DataAccessObjects
                         + "@length, "
                         + "@device, "
                         + "@playCount, "
-                        + "@filename "
+                        + "@filename, "
+                        + "@ignored, "
                         + ")";
 
                 _hDatabase.Execute(sqlQuery,
@@ -152,7 +198,8 @@ namespace ZenseMe.Lib.DataAccessObjects
                     new SQLiteParameter("@length", entryObject.Length),
                     new SQLiteParameter("@device", entryObject.Device),
                     new SQLiteParameter("@playCount", entryObject.PlayCount),
-                    new SQLiteParameter("@filename", entryObject.Filename)
+                    new SQLiteParameter("@filename", entryObject.Filename),
+                    new SQLiteParameter("@ignored", ignored ? "1" : "0")
                 );
             }
             else
@@ -179,7 +226,7 @@ namespace ZenseMe.Lib.DataAccessObjects
                     }
                 }
 
-                string sqlQueryUpdate = "UPDATE device_tracks SET id = @id, name = @name, artist = @artist, album = @album, genre = @genre, length = @length, device = @device, play_count = @playCount, play_count_his = @playCountHis, filename = @filename WHERE persistent_id = @persistentId";
+                string sqlQueryUpdate = "UPDATE device_tracks SET id = @id, name = @name, artist = @artist, album = @album, genre = @genre, length = @length, device = @device, play_count = @playCount, play_count_his = @playCountHis, filename = @filename, ignored = @ignored WHERE persistent_id = @persistentId";
                 _hDatabase.Execute(sqlQueryUpdate,
                     new SQLiteParameter("@id", entryObject.Id),
                     new SQLiteParameter("@persistentId", entryObject.PersistentId),
@@ -191,7 +238,8 @@ namespace ZenseMe.Lib.DataAccessObjects
                     new SQLiteParameter("@device", entryObject.Device),
                     new SQLiteParameter("@playCount", entryObject.PlayCount),
                     new SQLiteParameter("@playCountHis", CheckHis),
-                    new SQLiteParameter("@filename", entryObject.Filename)
+                    new SQLiteParameter("@filename", entryObject.Filename),
+                    new SQLiteParameter("@ignored", ignored ? "1" : "0")
                 );
             }
         }

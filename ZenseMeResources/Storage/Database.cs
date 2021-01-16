@@ -46,7 +46,37 @@ namespace ZenseMe.Lib.Storage
         {
             if (SQLiteConnection.GetSchema("Tables").Rows.Count == 0)
             {
-                Execute("CREATE TABLE device_tracks ([id] NVARCHAR(30), [persistent_id] NVARCHAR(30) PRIMARY KEY, [filename] TEXT, [name] NVARCHAR(256), [artist] NVARCHAR(256), [album] NVARCHAR(256), [genre] NVARCHAR(256), [length] INTEGER, [play_count] INTEGER, [play_count_his] INTEGER DEFAULT '0', [date_submitted] NVARCHAR(20) DEFAULT '0', [ignored] INTEGER DEFAULT '0', [device] NVARCHAR(30))");
+                Execute("CREATE TABLE device_tracks (" +
+                    "[id] NVARCHAR(30), " +
+                    "[persistent_id] NVARCHAR(30) PRIMARY KEY, " +
+                    "[filename] TEXT, " +
+                    "[name] NVARCHAR(256), " +
+                    "[artist] NVARCHAR(256), " +
+                    "[album] NVARCHAR(256), " +
+                    "[genre] NVARCHAR(256), " +
+                    "[length] INTEGER, " +
+                    "[play_count] INTEGER, " +
+                    "[play_count_his] INTEGER DEFAULT '0', " +
+                    "[date_submitted] NVARCHAR(20) DEFAULT '0', " +
+                    "[ignored] INTEGER DEFAULT '0', " +
+                    "[device] NVARCHAR(30))");
+            }
+
+            // The genre column was added in v2.0.1. Add it if it doesn't
+            // already exist.
+            else if (SQLiteConnection.GetSchema("Columns").Select("COLUMN_NAME='genre' AND TABLE_NAME='device_tracks'").Length == 0)
+            {
+                Execute("ALTER TABLE device_tracks ADD COLUMN [genre] NVARCHAR(256)");
+            }
+
+            // The AutoIgnore feature was added in v2.0.2. Add table if it
+            // doesn't exist.
+            if (SQLiteConnection.GetSchema("Tables").Rows.Count == 1)
+            {
+                Execute("CREATE TABLE auto_ignore_rules(" +
+                    "[field] NVARCHAR(20) NOT NULL, " +
+                    "[value] NVARCHAR(256) NOT NULL," +
+                    "CONSTRAINT id PRIMARY KEY (field,value))");
             }
         }
 
@@ -109,6 +139,19 @@ namespace ZenseMe.Lib.Storage
                 Console.WriteLine("SQLite execute error: " + ex);
             }
             return affectedRows;
+        }
+
+        public SQLiteDataAdapter GetDataAdapter(string selectCommandText)
+        {
+            Connect();
+            SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter(selectCommandText, SQLiteConnection);
+            SQLiteCommandBuilder commandBuilder = new SQLiteCommandBuilder(dataAdapter);
+
+            dataAdapter.UpdateCommand = commandBuilder.GetUpdateCommand();
+            dataAdapter.InsertCommand = commandBuilder.GetInsertCommand();
+            dataAdapter.DeleteCommand = commandBuilder.GetDeleteCommand();
+
+            return dataAdapter;
         }
     }
 }

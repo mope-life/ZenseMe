@@ -93,6 +93,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Authenticator.cs" />
+    <Compile Include="Forms\AutoIgnore.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AutoIgnore.Designer.cs">
+      <DependentUpon>AutoIgnore.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Login.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -120,6 +126,9 @@
     <Compile Include="Forms\Settings.Designer.cs">
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Forms\AutoIgnore.resx">
+      <DependentUpon>AutoIgnore.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ContentView.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ContentView.cs</DependentUpon>
@@ -161,7 +170,7 @@
     <None Include="Properties\app.manifest">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Properties\DataSources\ZenseMe.Client.Forms.ContentView.datasource" />
+    <None Include="Properties\DataSources\ZenseMe.Lib.Objects.AutoIgnoreRule.datasource" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ZuseMe.ico" />

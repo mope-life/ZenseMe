@@ -1,33 +1,33 @@
-﻿using System.Configuration;
+﻿using ZenseMe.Lib.Managers;
+using System.Configuration;
 
-using ZenseMe.Lib.Managers;
-using ZenseMe.Client.Forms;
-
-namespace ZenseMe.Client
+namespace ZenseMe.Client.Forms
 {
     class Authenticator
     {
         /**
-         * Do the whole authentication process
-         * @return  True if authentication was successful or if we were already
-         *          authenticated
+         * Do the whole authentication process described here:
+         * https://www.last.fm/api/desktopauth
+         *
+         * Returns true if authentication was successful or if we were already
+         * authenticated.
          */
         public bool Authenticate()
         {
-            Audioscrobbler audioscrobbler = new Audioscrobbler();
+            ApiManager apiManager = new ApiManager();
 
             if (ConfigurationManager.AppSettings["LastFM_SessionKey"] == "")
             {
-                if (!audioscrobbler.GetToken())
+                if (!apiManager.GetToken())
                 {
                     return false;
                 }
                 Login login = new Login();
 
-                login.webBrowser1.Navigate(audioscrobbler.GetAuthUrl());
+                login.webBrowser1.Navigate(apiManager.GetAuthUrl());
                 login.ShowDialog();
 
-                if (!audioscrobbler.GetSession())
+                if (!apiManager.GetSession())
                 {
                     return false;
                 }

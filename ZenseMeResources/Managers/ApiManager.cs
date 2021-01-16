@@ -18,29 +18,25 @@ using System.Security;
 
 namespace ZenseMe.Lib.Managers
 {
-    public class Audioscrobbler
+    public class ApiManager
     {
-
-
-        /* Begin major changes by mope-life */
-
-
 
         private string token = "";
         private string sessionKey = ConfigurationManager.AppSettings["LastFM_SessionKey"];
 
+        /**
+         * Submits a track to last.fm. Returns true if successful.
+         */
         public bool SubmitTrack(string artist, string track, string album, int duration, DateTime dateSubmitted)
         {
-            try
-            {
-                DateTimeFormatInfo DateTimeInfo = new DateTimeFormatInfo();
-                DateTimeInfo.ShortDatePattern = @"dd/MM/yyyy HH:mm:ss";
+            DateTimeFormatInfo DateTimeInfo = new DateTimeFormatInfo();
+            DateTimeInfo.ShortDatePattern = @"dd/MM/yyyy HH:mm:ss";
 
-                TimeSpan MinTimeZone = DateTime.Now - DateTime.UtcNow;
-                long TrackUnixTime = dateSubmitted.Ticks - MinTimeZone.Ticks - DateTime.Parse("01/01/1970 00:00:00", DateTimeInfo).Ticks;
-                TrackUnixTime /= 10000000;
+            TimeSpan MinTimeZone = DateTime.Now - DateTime.UtcNow;
+            long TrackUnixTime = dateSubmitted.Ticks - MinTimeZone.Ticks - DateTime.Parse("01/01/1970 00:00:00", DateTimeInfo).Ticks;
+            TrackUnixTime /= 10000000;
 
-                Dictionary<string, string> postData = new Dictionary<string, string>
+            Dictionary<string, string> postData = new Dictionary<string, string>
                 {
                     { "method", "track.scrobble" },
                     { "artist", artist },
@@ -52,21 +48,34 @@ namespace ZenseMe.Lib.Managers
                     { "sk", sessionKey }
                 };
 
-                HttpWebRequest httpWebRequest = BuildHttpRequest(postData);
-                HttpWebResponse httpWebResponse = CheckResponse(httpWebRequest);
+            HttpWebRequest httpWebRequest = BuildLastfmRequest(postData);
 
-                return true;
-            }
-            catch (Exception ex)
+            return ApplyToResponse(httpWebRequest, httpWebResponse =>
             {
-                Console.WriteLine("Submit error: " + ex);
-                MessageBox.Show("Failed to submit track to the last.fm server.", "ZenseMe");
-                return false;
-            }
+                // In this case, if the request does not throw an error, we
+                // don't care about the content of the response.
+                return true;
+
+                // TODO: In the future we may want to handle the case where
+                // last.fm ignores or corrects the track:
+                // https://www.last.fm/api/show/track.scrobble
+            });
         }
 
+        /**
+         * Returns the url we need to authorize the app on the user's last.fm profile.
+         */
+        public string GetAuthUrl()
+        {
+            string userSignInData = string.Format("api_key={0}&token={1}", Resources.Keys.API_KEY, token);
+            return string.Format("http://www.last.fm/api/auth/?{0}", userSignInData); ;
+        }
 
-
+        /**
+         * Retrieves an API token from last.fm. Needed to get authorization from
+         * user, then retrieve a session key (which we can use indefinitely).
+         * Should only be called if we don't already have a stored session key.
+         */
         public bool GetToken()
         {
             Dictionary<string, string> postData = new Dictionary<string, string>
@@ -75,10 +84,8 @@ namespace ZenseMe.Lib.Managers
                 {"api_key", Resources.Keys.API_KEY }
             };
 
-            HttpWebRequest httpWebRequest = BuildHttpRequest(postData);
-            HttpWebResponse httpWebResponse = CheckResponse(httpWebRequest);
-
-            if (httpWebResponse != null)
+            HttpWebRequest httpWebRequest = BuildLastfmRequest(postData);
+            return ApplyToResponse(httpWebRequest, httpWebResponse =>
             {
                 XmlDocument xmlDocument = new XmlDocument();
                 xmlDocument.Load(httpWebResponse.GetResponseStream());
@@ -90,23 +97,17 @@ namespace ZenseMe.Lib.Managers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("getToken error: " + ex);
+                    Console.WriteLine("[Audioscrobbler] Error in GetToken: " + ex);
                     MessageBox.Show("Unexpected xml response while retrieving token.", "ZenseMe");
                     return false;
                 }
-            }
-            else
-            {
-                return false;
-            }
+            });
         }
 
-        public string GetAuthUrl()
-        {
-            string userSignInData = string.Format("api_key={0}&token={1}", Resources.Keys.API_KEY, token);
-            return string.Format("http://www.last.fm/api/auth/?{0}", userSignInData); ;
-        }
-
+        /**
+         * Gets a session key from last.fm. Once this returs successfully, we
+         * should never have to go through the authentication process again.
+         */
         public bool GetSession()
         {
             Dictionary<string, string> postData = new Dictionary<string, string>
@@ -116,11 +117,9 @@ namespace ZenseMe.Lib.Managers
                 {"token", token }
             };
 
-            HttpWebRequest httpWebRequest = BuildHttpRequest(postData);
-            HttpWebResponse httpWebResponse = CheckResponse(httpWebRequest);
+            HttpWebRequest httpWebRequest = BuildLastfmRequest(postData);
+            return ApplyToResponse(httpWebRequest, httpWebResponse => {
 
-            if (httpWebResponse != null)
-            {
                 XmlDocument xmlDocument = new XmlDocument();
                 xmlDocument.Load(httpWebResponse.GetResponseStream());
                 Configuration Configuration =
@@ -140,42 +139,22 @@ namespace ZenseMe.Lib.Managers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("getSession error: " + ex);
+                    Console.WriteLine("[Audioscrobbler] Error in GetSession: " + ex);
                     MessageBox.Show("Unexpected xml response while retrieving session key.", "ZenseMe");
                     return false;
                 }
-            }
-            else
-            {
-                return false;
-            }
+            });
         }
 
-        private HttpWebRequest BuildHttpRequest(Dictionary<string, string> dataDict, bool signed = true)
-        {
-            HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create("http://ws.audioscrobbler.com/2.0/");
-
-            byte[] Buffer = new UTF8Encoding().GetBytes(
-                ProcessPostData(dataDict, signed)
-                );
-
-            httpWebRequest.Method = "POST";
-            httpWebRequest.ContentType = "application/x-www-form-urlencoded";
-            httpWebRequest.UserAgent = string.Format("ZenseMe/{0} ( mope-life )", Application.ProductVersion);
-            httpWebRequest.Timeout = 5000;
-            httpWebRequest.ContentLength = Buffer.Length;
-
-            Stream Stream = httpWebRequest.GetRequestStream();
-            Stream.Write(Buffer, 0, Buffer.Length);
-            Stream.Close();
-
-            return httpWebRequest;
-        }
-
+        /**
+         * Takes our POST data, arranges it according to API specifications, and
+         * signs it:
+         * https://www.last.fm/api/authspec#_8-signing-calls
+         *
+         * Not all methods need be signed (i.e. user.getInfo)
+         */
         private string ProcessPostData(Dictionary<string, string> dataDict, bool signed)
         {
-            // Signing process described in Section 8, here: https://www.last.fm/api/authspec#_8-signing-calls
-            // Not all methods need be signed (i.e. user.getInfo), which is why this is conditional
             if (signed)
             {
                 List<string> alphaKeys = dataDict.Keys.ToList();
@@ -202,21 +181,60 @@ namespace ZenseMe.Lib.Managers
             return postDataBuilder.ToString();
         }
 
-        private HttpWebResponse CheckResponse(HttpWebRequest request)
+        /**
+         * Puts together a web request to be sent to the last.fm API with the
+         * provided POST data.
+         */
+        private HttpWebRequest BuildLastfmRequest(Dictionary<string, string> dataDict, bool signed = true)
         {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://ws.audioscrobbler.com/2.0/");
+
+            byte[] Buffer = new UTF8Encoding().GetBytes(
+                ProcessPostData(dataDict, signed)
+                );
+
+            request.Method = "POST";
+            request.ContentType = "application/x-www-form-urlencoded";
+            request.UserAgent = string.Format("ZenseMe/{0} ( mope-life )", Application.ProductVersion);
+            request.Timeout = 5000;
+            request.ContentLength = Buffer.Length;
+
+            Stream Stream = request.GetRequestStream();
+            Stream.Write(Buffer, 0, Buffer.Length);
+            Stream.Close();
+
+            return request;
+        }
+
+        /**
+         * Simplifies the error checking for last.fm API error codes.
+         *
+         * Takes a web request and a callback. Attempts to get an
+         * HttpWebResponse from the web request, then apply the callback to that
+         * response. Also ensures that the response is properly closed after
+         * we're done with it.
+         *
+         * Callback should return false to indicate that something has gone
+         * wrong, or throw an exception.
+         */
+        private bool ApplyToResponse(HttpWebRequest httpWebRequest, Func<HttpWebResponse, bool> action)
+        {
+            HttpWebResponse httpWebResponse = null;
+
             try
             {
-                return request.GetResponse() as HttpWebResponse;
+                httpWebResponse = httpWebRequest.GetResponse() as HttpWebResponse;
+                return action(httpWebResponse);
             }
             catch (WebException ex)
             {
-                Console.WriteLine("http error: " + ex.Message);
+                Console.WriteLine("[Audioscrobbler] http error: " + ex.Message);
 
                 // I think this should occur as long as the request didn't time
                 // out or get rejected by last.fm server
                 if (ex.Status == WebExceptionStatus.ProtocolError)
                 {
-                    HttpWebResponse httpWebResponse = ex.Response as HttpWebResponse;
+                    httpWebResponse = ex.Response as HttpWebResponse;
 
                     XmlDocument xmlDocument = new XmlDocument();
                     xmlDocument.Load(httpWebResponse.GetResponseStream());
@@ -224,23 +242,21 @@ namespace ZenseMe.Lib.Managers
                     XmlNode errorNode = xmlDocument.GetElementsByTagName("error")[0];
                     string lastFmErrorCoode = errorNode.Attributes["code"].Value;
                     string lastFmErrorString = errorNode.InnerText;
-                    Console.WriteLine("last.fm says: code " + lastFmErrorCoode + ": " + lastFmErrorString);
-                    MessageBox.Show("last.fm says: code " + lastFmErrorCoode + ": " + lastFmErrorString);
+                    Console.WriteLine("[Audioscrobbler] last.fm says: code " + lastFmErrorCoode + ": " + lastFmErrorString);
 
-                    MessageBox.Show("There was a problem getting authentication from last.fm");
                 }
-                else
+                MessageBox.Show("There was a problem communicating with last.fm");
+
+                return false;
+            }
+            finally
+            {
+                if (httpWebResponse != null)
                 {
-                    throw new WebException(ex.Message, ex);
+                    httpWebResponse.Close();
                 }
-
-                return null;
             }
         }
-
-
-        /* End major changes by mope-life */
-
 
 
         private string CalculateMD5(string input)

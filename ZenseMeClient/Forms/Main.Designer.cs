@@ -50,6 +50,7 @@ namespace ZenseMe.Client.Forms
             this.main_StatusText = new System.Windows.Forms.ToolStripStatusLabel();
             this.main_TabControl = new System.Windows.Forms.TabControl();
             this.main_HomeTab = new System.Windows.Forms.TabPage();
+            this.ll_autoignore = new System.Windows.Forms.LinkLabel();
             this.ll_profile = new System.Windows.Forms.LinkLabel();
             this.ll_fetch = new System.Windows.Forms.LinkLabel();
             this.ll_refresh = new System.Windows.Forms.LinkLabel();
@@ -63,6 +64,8 @@ namespace ZenseMe.Client.Forms
             this.lbl_TracksToScrobble = new System.Windows.Forms.Label();
             this.lbl_TotalTracksStored = new System.Windows.Forms.Label();
             this.main_LastFMBox = new System.Windows.Forms.GroupBox();
+            this.button_DetachLastFM = new System.Windows.Forms.Button();
+            this.button_LinkLastFM = new System.Windows.Forms.Button();
             this.lbl_FMLastScrobble = new System.Windows.Forms.Label();
             this.lbl_FMUsername = new System.Windows.Forms.Label();
             this.main_DeviceBox = new System.Windows.Forms.GroupBox();
@@ -98,9 +101,6 @@ namespace ZenseMe.Client.Forms
             this.main_HistoryContentView = new ZenseMe.Client.Forms.ContentView();
             this.main_AllTracksTab = new System.Windows.Forms.TabPage();
             this.main_AllTracksContentView = new ZenseMe.Client.Forms.ContentView();
-            this.contentViewBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.button_LinkLastFM = new System.Windows.Forms.Button();
-            this.button_DetachLastFM = new System.Windows.Forms.Button();
             this.main_ToolStripContainer.BottomToolStripPanel.SuspendLayout();
             this.main_ToolStripContainer.ContentPanel.SuspendLayout();
             this.main_ToolStripContainer.SuspendLayout();
@@ -118,7 +118,6 @@ namespace ZenseMe.Client.Forms
             this.box_FilteredSelectionIgnore.SuspendLayout();
             this.main_HistoryTab.SuspendLayout();
             this.main_AllTracksTab.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.contentViewBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // settingsToolStripMenuItem
@@ -283,6 +282,7 @@ namespace ZenseMe.Client.Forms
             // 
             // main_HomeTab
             // 
+            this.main_HomeTab.Controls.Add(this.ll_autoignore);
             this.main_HomeTab.Controls.Add(this.ll_profile);
             this.main_HomeTab.Controls.Add(this.ll_fetch);
             this.main_HomeTab.Controls.Add(this.ll_refresh);
@@ -301,6 +301,24 @@ namespace ZenseMe.Client.Forms
             this.main_HomeTab.Text = "Home";
             this.main_HomeTab.UseVisualStyleBackColor = true;
             this.main_HomeTab.Enter += new System.EventHandler(this._cSummaryTab_Enter);
+            // 
+            // ll_autoignore
+            // 
+            this.ll_autoignore.ActiveLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(85)))), ((int)(((byte)(85)))), ((int)(((byte)(85)))));
+            this.ll_autoignore.AutoSize = true;
+            this.ll_autoignore.BackColor = System.Drawing.Color.White;
+            this.ll_autoignore.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.ll_autoignore.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.ll_autoignore.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
+            this.ll_autoignore.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.ll_autoignore.Location = new System.Drawing.Point(520, 20);
+            this.ll_autoignore.Name = "ll_autoignore";
+            this.ll_autoignore.Size = new System.Drawing.Size(86, 21);
+            this.ll_autoignore.TabIndex = 10;
+            this.ll_autoignore.TabStop = true;
+            this.ll_autoignore.Text = "autoignore";
+            this.ll_autoignore.VisitedLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.ll_autoignore.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ll_autoignore_LinkClicked);
             // 
             // ll_profile
             // 
@@ -329,7 +347,7 @@ namespace ZenseMe.Client.Forms
             this.ll_fetch.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.ll_fetch.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
             this.ll_fetch.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.ll_fetch.Location = new System.Drawing.Point(520, 20);
+            this.ll_fetch.Location = new System.Drawing.Point(429, 20);
             this.ll_fetch.Name = "ll_fetch";
             this.ll_fetch.Size = new System.Drawing.Size(85, 21);
             this.ll_fetch.TabIndex = 8;
@@ -489,6 +507,26 @@ namespace ZenseMe.Client.Forms
             this.main_LastFMBox.TabStop = false;
             this.main_LastFMBox.Text = "Last.fm";
             // 
+            // button_DetachLastFM
+            // 
+            this.button_DetachLastFM.Location = new System.Drawing.Point(9, 93);
+            this.button_DetachLastFM.Name = "button_DetachLastFM";
+            this.button_DetachLastFM.Size = new System.Drawing.Size(134, 29);
+            this.button_DetachLastFM.TabIndex = 9;
+            this.button_DetachLastFM.Text = "Detach from profile";
+            this.button_DetachLastFM.UseVisualStyleBackColor = true;
+            this.button_DetachLastFM.Click += new System.EventHandler(this.button_DetachLastFM_Click);
+            // 
+            // button_LinkLastFM
+            // 
+            this.button_LinkLastFM.Location = new System.Drawing.Point(9, 58);
+            this.button_LinkLastFM.Name = "button_LinkLastFM";
+            this.button_LinkLastFM.Size = new System.Drawing.Size(134, 29);
+            this.button_LinkLastFM.TabIndex = 8;
+            this.button_LinkLastFM.Text = "Link with profile";
+            this.button_LinkLastFM.UseVisualStyleBackColor = true;
+            this.button_LinkLastFM.Click += new System.EventHandler(this.button_LinkLastFM_Click);
+            // 
             // lbl_FMLastScrobble
             // 
             this.lbl_FMLastScrobble.AutoSize = true;
@@ -614,7 +652,6 @@ namespace ZenseMe.Client.Forms
             this.combo_QueryTypeSubmit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.combo_QueryTypeSubmit.FormattingEnabled = true;
             this.combo_QueryTypeSubmit.Items.AddRange(new object[] {
-            "All",
             "Artist",
             "Album",
             "Genre",
@@ -757,7 +794,6 @@ namespace ZenseMe.Client.Forms
             this.combo_QueryTypeIgnore.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.combo_QueryTypeIgnore.FormattingEnabled = true;
             this.combo_QueryTypeIgnore.Items.AddRange(new object[] {
-            "All",
             "Artist",
             "Album",
             "Genre",
@@ -888,30 +924,6 @@ namespace ZenseMe.Client.Forms
             this.main_AllTracksContentView.Size = new System.Drawing.Size(920, 428);
             this.main_AllTracksContentView.TabIndex = 0;
             // 
-            // contentViewBindingSource
-            // 
-            this.contentViewBindingSource.DataSource = typeof(ZenseMe.Client.Forms.ContentView);
-            // 
-            // button_LinkLastFM
-            // 
-            this.button_LinkLastFM.Location = new System.Drawing.Point(9, 58);
-            this.button_LinkLastFM.Name = "button_LinkLastFM";
-            this.button_LinkLastFM.Size = new System.Drawing.Size(134, 29);
-            this.button_LinkLastFM.TabIndex = 8;
-            this.button_LinkLastFM.Text = "Link with profile";
-            this.button_LinkLastFM.UseVisualStyleBackColor = true;
-            this.button_LinkLastFM.Click += new System.EventHandler(this.button_LinkLastFM_Click);
-            // 
-            // button_DetachLastFM
-            // 
-            this.button_DetachLastFM.Location = new System.Drawing.Point(9, 93);
-            this.button_DetachLastFM.Name = "button_DetachLastFM";
-            this.button_DetachLastFM.Size = new System.Drawing.Size(134, 29);
-            this.button_DetachLastFM.TabIndex = 9;
-            this.button_DetachLastFM.Text = "Detach from profile";
-            this.button_DetachLastFM.UseVisualStyleBackColor = true;
-            this.button_DetachLastFM.Click += new System.EventHandler(this.button_DetachLastFM_Click);
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -947,7 +959,6 @@ namespace ZenseMe.Client.Forms
             this.box_FilteredSelectionIgnore.ResumeLayout(false);
             this.main_HistoryTab.ResumeLayout(false);
             this.main_AllTracksTab.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.contentViewBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1005,7 +1016,6 @@ namespace ZenseMe.Client.Forms
         private System.Windows.Forms.Label lbl_DevName;
         private System.Windows.Forms.GroupBox box_SubmitTracks;
         private System.Windows.Forms.Button button_IgnoreTracks;
-        private System.Windows.Forms.ToolTip tooltip_SubmitTracks;
         private System.Windows.Forms.ComboBox combo_QueryTextSubmit;
         private System.Windows.Forms.GroupBox box_SubmitDate;
         private System.Windows.Forms.GroupBox box_FilteredSelectionSubmit;
@@ -1021,8 +1031,9 @@ namespace ZenseMe.Client.Forms
         private System.Windows.Forms.Button button_DeselectQueryIgnore;
         private System.Windows.Forms.Button button_SelectNoneIgnore;
         private System.Windows.Forms.Button button_SelectAllIgnore;
-        private System.Windows.Forms.BindingSource contentViewBindingSource;
         private System.Windows.Forms.Button button_DetachLastFM;
         private System.Windows.Forms.Button button_LinkLastFM;
+        private System.Windows.Forms.LinkLabel ll_autoignore;
+        private System.Windows.Forms.ToolTip tooltip_SubmitTracks;
     }
 }

@@ -154,7 +154,9 @@ namespace ZenseMe.Client.Forms
             if (ignoreTabSelector == null)
             {
                 ignoreTabSelector = new TrackSelector(
-                    this, main_IgnoredTracksContentView,
+                    this,
+                    TrackStatus.Ignored,
+                    main_IgnoredTracksContentView,
                     new List<Control> {
                         combo_QueryTypeIgnore,
                         combo_QueryTextIgnore,
@@ -166,7 +168,7 @@ namespace ZenseMe.Client.Forms
                 );
             }
 
-            combo_QueryTypeIgnore.SelectedIndex = 0;
+            combo_QueryTypeIgnore.SelectedIndex = -1;
         }
 
         public void InitializeHistoryTracksTab()
@@ -200,7 +202,9 @@ namespace ZenseMe.Client.Forms
             if (submitTabSelector == null)
             {
                 submitTabSelector = new TrackSelector(
-                    this, main_SubmitContentView,
+                    this,
+                    TrackStatus.NotSubmitted,
+                    main_SubmitContentView,
                     new List<Control>
                     {
                         combo_QueryTypeSubmit,
@@ -211,14 +215,17 @@ namespace ZenseMe.Client.Forms
                         button_DeselectQuerySubmit
                     }
                 );
+
             }
 
-            combo_QueryTypeSubmit.SelectedIndex = 0;
+            combo_QueryTypeSubmit.SelectedIndex = -1;
         }
 
         public void ScanDeviceForContent()
         {
             GetDevice();
+
+            EntryObjectDAO.BuildAutoIgnoreRules();
 
             EntryManager EntryManager = new EntryManager(Device);
             EntryManager.FoundNewMusicEntryEvent += new EntryManager.FoundTrackEntryDelegate(FoundEntryObject);
@@ -284,7 +291,7 @@ namespace ZenseMe.Client.Forms
                 return;
             }
 
-            DialogResult SkipYesNo = MessageBox.Show("Are you sure that you want to skip the selected tracks?\nYou won't be able to scrobble this track until it's next play.", "ZenseMe", MessageBoxButtons.YesNo);
+            DialogResult SkipYesNo = MessageBox.Show("Are you sure that you want to skip the selected tracks? All pending scrobbles will be skipped, causing scrobbles to start fresh when these tracks are played again.", "ZenseMe", MessageBoxButtons.YesNo);
             if (SkipYesNo == DialogResult.Yes)
             {
                 ToolBarStatusText = "Now skipping tracks...";
@@ -365,7 +372,7 @@ namespace ZenseMe.Client.Forms
 
         private void ll_settings_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Forms.Settings SettingsForm = new Forms.Settings(this);
+            Settings SettingsForm = new Settings(this);
             SettingsForm.Show();
         }
 
@@ -384,6 +391,12 @@ namespace ZenseMe.Client.Forms
             {
                 Process.Start("http://last.fm/user/" + setProfileName);
             }
+        }
+
+        private void ll_autoignore_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            AutoIgnore AutoIgnoreForm = new AutoIgnore();
+            AutoIgnoreForm.Show();
         }
 
         private void ll_fetch_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -440,8 +453,9 @@ namespace ZenseMe.Client.Forms
             private ComboBox _comboQueryText;
             private ContentView _contentView;
             private Main _main;
+            private TrackStatus trackStatus;
 
-            public TrackSelector(Main caller, ContentView contentView, List<Control> controls)
+            public TrackSelector(Main caller, TrackStatus trackStatus, ContentView contentView, List<Control> controls)
             {
                 _main = caller;
                 _contentView = contentView;
@@ -452,6 +466,8 @@ namespace ZenseMe.Client.Forms
                 {
                     ctrl.Tag = this;
                 }
+
+                this.trackStatus = trackStatus;
             }
 
             public void SelectQuery(bool onOrOff = true)
@@ -481,15 +497,14 @@ namespace ZenseMe.Client.Forms
             {
                 string queryType = _comboQueryType.SelectedItem as string;
 
+                if (queryType == null) return;
+
                 _comboQueryText.Items.Clear();
                 _comboQueryText.SelectedIndex = -1;
                 _comboQueryText.Text = "";
 
-                if (queryType != "All")
-                {
-                    List<string> uniqueValues = _main.EntryObjectDAO.FetchUnique(queryType);
-                    _comboQueryText.Items.AddRange(uniqueValues.ToArray());
-                }
+                List<string> uniqueValues = _main.EntryObjectDAO.FetchUnique(queryType, trackStatus);
+                _comboQueryText.Items.AddRange(uniqueValues.ToArray());
             }
         }
 

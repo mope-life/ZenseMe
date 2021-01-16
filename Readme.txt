@@ -1,5 +1,5 @@
 ZenseMe (Windows Phone, Zune, MTP device scrobbler for Last.fm)
-Release: v2.0.1
+Release: v2.0.2
 By Dustin Ross
 Originally by Arnold Vink (Dumbie)
 --------------------------------------------------------------------------------
@@ -20,19 +20,24 @@ Zenses - Sixones (Adam Livesley)
 
 | Release readme:
 --------------------------------------------------------------------------------
+ZenseMe (Windows Phone, Zune, MTP device scrobbler for Last.fm)
+Release: v2.0.2
+By Dustin Ross
+Originally by Arnold Vink (Dumbie)
+
+--------------------------------------------------------
+
 Hi, thanks for using this app! Actually, I didn't really make it; they just pay me to talk about it.
 
 
 VERY IMPORTANT NOTE!
 
-Normally, when you update, you will want top KEEP the file "ZenseMe.exe.config" and the folder "Data/" and copy them into the folder of your new release.
-
-However, do not do this if you are upgrading from version 2.0.0 to a future version (including this one). The old database cannot be used, which means you need to make sure the scrobbles from your device are up to date, and SKIP all these old plays again. See Note (i).
+If you are updating from a previous version, you will want to KEEP the folder "Data/". Copy that folder from the directory for your old version to the directory for your new version. This will save you the trouble of double scrobbling/skipping/ignoring a bunch of tracks and listens you've already dealt with.
 
 
 USAGE:
 
-1. Unzip this directory if you haven't done so already, and put it wherever you want.
+1. Unzip this directory if you haven't done so already, and put it wherever you want. This program is self contained in the directory - no installation required.
 
 2. You will have to close out of the following media players before attempting to run ZenseMe: Zune, songbird, Media Go, MediaMonkey. I'm not sure why--presumably they can interfere with communication between this app and your device.
 
@@ -51,12 +56,12 @@ i) The first time you fetch songs, you might have thousands upon thousands of li
 
 ii) The first time you click "Link with profile" or "Scrobble tracks", you will be taken to a browser to log in to your last.fm account. JavaScript will probably throw a couple errors at you, but that's fine. Once you've authorized ZenseMe on your last.fm account, close the browser window. You only have to do this once.
 
-iii) The app is only ever associated with one user and one database. If you have multiple Zune/last.fm users (however unlikely that is in 2020), just copy this whole directory for each new instance.
+iii) The app is only ever associated with one user and one database. If you have multiple Zune/last.fm users (however unlikely that is in this era), just copy this whole directory for each new instance.
 
 
 TROUBLE:
 
-- If everything works but no plays show up on your profile, it might be a problem with your firewall (or so I'm told?).
+- If everything works but no plays show up on your profile, it might be a problem with your firewall (or so I'm told).
 
 - If you accidentally or intentionally revoke authorization for ZenseMe in your last.fm account, just click "Detach from profile" on the main tab and then link again.
 
@@ -67,14 +72,19 @@ CONTRIBUTE:
 
 If you'd like to help improve this app, go to github.com/mope-life/ZenseMe
 
-
 Happy scrobbling!
-	Dusty Scott Ross, Aug. 2020
-	Updated Oct. 2020
+-Dusty Scott Ross, Aug. 2020
+-Updated Oct. 2020
+-Updated Jan. 2021
 --------------------------------------------------------------------------------
 
 
 | Changelog
+v2.0.2 (15-january-2021)
+- Autoignore feature added
+- Fixed a bug which caused scrobbling to fail after one or two tracks
+- Database now automatically updates itself from old versions
+
 v2.0.1 (16-october-2020)
 - Status bar more accurately logs progress while fetching from device
 - Database now includes "Genre" tag

@@ -2,9 +2,11 @@ using PortableDeviceApiLib;
 using System;
 using System.Collections;
 using System.Configuration;
+using System.Data;
 using System.Windows.Forms;
 using ZenseMe.Lib.Constants;
 using ZenseMe.Lib.Objects;
+using ZenseMe.Lib.Storage;
 
 namespace ZenseMe.Lib.Managers
 {
@@ -183,7 +185,6 @@ namespace ZenseMe.Lib.Managers
                 {
                     entry.Device = _hDevice.Model + " (" + _hDevice.FriendlyName + ")";
                 }
-                Console.WriteLine("Current artist: " + entry.Artist + " - album: " + entry.Album);
             }
         }
     }

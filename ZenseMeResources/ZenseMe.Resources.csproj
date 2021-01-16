@@ -91,11 +91,12 @@
     <Compile Include="Collections\TrackEntries.cs" />
     <Compile Include="Constants\PropertyNames.cs" />
     <Compile Include="Constants\VariantTypes.cs" />
+    <Compile Include="DataAccessObjects\AutoIgnoreDAO.cs" />
     <Compile Include="DataAccessObjects\IgnoreTrackDAO.cs" />
     <Compile Include="DataAccessObjects\EntryObjectDAO.cs" />
     <Compile Include="DataAccessObjects\PlayedTrackDAO.cs" />
     <Compile Include="Keys.cs" />
-    <Compile Include="Managers\Audioscrobbler.cs" />
+    <Compile Include="Managers\ApiManager.cs" />
     <Compile Include="Managers\DeviceManager.cs" />
     <Compile Include="Managers\EntryManager.cs" />
     <Compile Include="Managers\PlayedTrackManager.cs" />
